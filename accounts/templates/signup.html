@@ -1,0 +1,140 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %} Signup {% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Right Panel (Form) -->
+    <div class="flex w-full p-12 justify-center">
+      <div class="max-w-md w-full mx-auto">
+        <h1 class="text-2xl font-bold mb-2">Create an account</h1>
+        <p class="text-gray-500 mb-6">Enter your details to get started</p>
+
+        <form id="signup-form" method="post" novalidate class="space-y-4">
+            {% csrf_token %}
+          <!-- userame Field -->
+          <div>
+            <label for="username" class="block text-sm font-medium mb-1">Username</label>
+            <input id="username" type="text" placeholder="John" required name="username"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"/>
+            <p id="name-error" class="mt-1 text-red-500 text-sm"></p>
+          </div>
+
+          <!-- Email Field -->
+          <div>
+            <label for="email" class="block text-sm font-medium mb-1">Email</label>
+            <input id="email" type="email" placeholder="email@example.com" required name="email"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"/>
+            <p id="email-error" class="mt-1 text-red-500 text-sm"></p>
+          </div>
+
+          <!-- Password Field -->
+          <div>
+            <label for="password" class="block text-sm font-medium mb-1">Password</label>
+            <input id="password" type="password" placeholder="Password" name="password" required minlength="8"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"/>
+            <p id="password-error" class="mt-1 text-red-500 text-sm"></p>
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div>
+            <label for="confirm-password" class="block text-sm font-medium mb-1">Confirm Password</label>
+            <input id="confirm-password" type="password" placeholder="Confirm password" name="confirm_password" required minlength="8"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"/>
+            <p id="confirm-error" class="mt-1 text-red-500 text-sm"></p>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit"
+            class="w-full py-3 btn-primary  text-white rounded-lg font-medium btn-primary  transition">
+            Create Account
+          </button>
+        </form>
+
+        <p class="mt-6 text-center text-sm text-gray-500">
+          Already have an account?
+          <a href="{% url 'signin' %}" class="text-gray-500 underline underline-offset-4  hover:text-[#7c43ef]">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form          = document.getElementById('signup-form');
+      const nameInput     = document.getElementById('username');
+      const emailInput    = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const confirmInput  = document.getElementById('confirm-password');
+  
+      const nameErr    = document.getElementById('name-error');
+      const emailErr   = document.getElementById('email-error');
+      const passErr    = document.getElementById('password-error');
+      const confirmErr = document.getElementById('confirm-error');
+  
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let valid = true;
+  
+        // clear old errors
+        [nameErr, emailErr, passErr, confirmErr].forEach(el => el.textContent = '');
+  
+        // 1) Username: start with letter, max 15 chars, alphanumeric only, no spaces
+        const nameVal = nameInput.value.trim();
+
+        // 1a) No spaces allowed
+        if (/\s/.test(nameVal)) {
+        nameErr.textContent = 'Username cannot contain spaces.';
+        valid = false;
+
+        // 1b) Required & pattern check
+        } else if (!/^[A-Za-z][A-Za-z0-9]{0,14}$/.test(nameVal)) {
+        nameErr.textContent = 'Must start with a letter, ≤15 chars, letters & numbers only.';
+        valid = false;
+        }
+  
+        // 2) Email: basic format, must contain @ and a valid TLD like .com/.net/.org/etc.
+        const emailVal = emailInput.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
+        if (!emailVal) {
+          emailErr.textContent = 'Email is required.';
+          valid = false;
+        } else if (!emailRegex.test(emailVal)) {
+          emailErr.textContent = 'Invalid email. e.g. user@example.com';
+          valid = false;
+        }
+  
+        // 3) Password: min 8 chars, at least 1 lowercase, uppercase, number & symbol
+        const pwd = passwordInput.value;
+        const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        if (!pwd) {
+          passErr.textContent = 'Password is required.';
+          valid = false;
+        } else if (!pwdRegex.test(pwd)) {
+          passErr.textContent = 'Min 8 chars with uppercase, lowercase, number & symbol.';
+          valid = false;
+        }
+  
+        // 4) Confirm password
+        if (confirmInput.value !== pwd) {
+          confirmErr.textContent = 'Passwords do not match.';
+          valid = false;
+        }
+  
+        if (valid) {
+          // all good!
+          alert('Account created successfully!');
+          // you can redirect here, e.g.
+          window.location.href = 'signin.html';
+        }
+      });
+    });
+  </script>
+  
+{% endblock %}

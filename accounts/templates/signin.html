@@ -1,0 +1,86 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %} Signin {% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="flex p-12 justify-center">
+      <div class="max-w-md w-full mx-auto">
+        <h1 class="text-2xl font-bold mb-2">Welcome back</h1>
+        <p class="text-gray-500 mb-6">Enter your credentials to sign in</p>
+
+        <form id="signin-form"  method="post" novalidate class="space-y-4">
+            {% csrf_token %}
+          <!-- Username Field -->
+          <div>
+            <label for="username" class="block text-sm font-medium mb-1">Username</label>
+            <input id="username" type="text" placeholder="John" required name="username"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"/>
+            <p id="name-error" class="mt-1 text-red-500 text-sm"></p>
+          </div>
+
+          <!-- Password Field -->
+          <div>
+            <label for="password" class="block text-sm font-medium mb-1">Password</label>
+            <input id="password" type="password" placeholder="••••••••"  name="password" required minlength="8"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" />
+            <p id="password-error" class="mt-1 text-red-500 text-sm"></p>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit"
+            class="w-full py-3 btn-primary  text-white rounded-lg font-medium transition">
+            Sign In
+          </button>
+        </form>
+
+        <p class="mt-6 text-center text-sm text-gray-500">
+          Don’t have an account?
+          <a href="{% url 'signup' %}" class="text-gray-500 underline underline-offset-4  hover:text-[#7c43ef]">Sign up</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form          = document.getElementById('signup-form');
+      const nameInput     = document.getElementById('username');
+      const nameErr    = document.getElementById('name-error');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let valid = true;
+  
+        // clear old errors
+        [nameErr, emailErr, passErr, confirmErr].forEach(el => el.textContent = '');
+  
+        // 1) Username: start with letter, max 15 chars, alphanumeric only, no spaces
+        const nameVal = nameInput.value.trim();
+
+        // 1a) No spaces allowed
+        if (/\s/.test(nameVal)) {
+        nameErr.textContent = 'Username cannot contain spaces.';
+        valid = false;
+
+        // 1b) Required & pattern check
+        } else if (!/^[A-Za-z][A-Za-z0-9]{0,14}$/.test(nameVal)) {
+        nameErr.textContent = 'Must start with a letter, ≤15 chars, letters & numbers only.';
+        valid = false;
+        }
+
+        if (valid) {
+          // all good!
+          alert('Account created successfully!');
+          // you can redirect here, e.g.
+          window.location.href = 'signin.html';
+        }
+      });
+    });
+  </script>
+
+{% endblock %}
