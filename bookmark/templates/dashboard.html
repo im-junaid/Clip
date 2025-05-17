@@ -8,7 +8,6 @@
 
 {% block content %}
 
-
 <!-- Main Content -->
 <main class="p-5">
     <div class="flex justify-between items-center mb-6">
@@ -112,7 +111,6 @@
     </div>
 
     <!-- Bookmark search list -->
-
     <section id="searchResults" class="transition-all duration-1000 ease-in-out opacity-0 max-h-0">
         <h2 class="text-white font-bold text-base mt-8 md:text-lg">🔍 Search Results</h2>
         <div id="searchResultsDiv"
@@ -149,23 +147,24 @@
                     <span class="text-[10px] md:text-xs tag">{{ bm.platform }}</span>
 
                     {% with bm.tags|length as total_tags %}
-                        {% for tag in bm.tags|slice:":3" %}
-                        <span class="text-[10px] md:text-xs tag">{{ tag }}</span>
-                        {% endfor %}
+                    {% for tag in bm.tags|slice:":3" %}
+                    <span class="text-[10px] md:text-xs tag">{{ tag }}</span>
+                    {% endfor %}
 
-                        {% if total_tags > 3 %}
-                        <span class="text-[10px] md:text-xs tag">
-                            +{{ total_tags|add:"-3" }}
-                        </span>
-                        {% endif %}
+                    {% if total_tags > 3 %}
+                    <span class="text-[10px] md:text-xs tag">
+                        +{{ total_tags|add:"-3" }}
+                    </span>
+                    {% endif %}
                     {% endwith %}
 
                 </div>
             </div>
-        {% empty %}
         </div>
-        <!-- Empty State (hidden by default) -->
-        <div id="emptyState" class="flex flex-col items-center justify-center mt-10 text-center">
+
+        {% endfor %}
+        <!-- No bookmark found -->
+        <div id="no-bookmarks" class="hidden flex flex-col items-center justify-center mt-10 text-center">
             <div class="bg-[#232B3A] rounded-full p-5 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[var(--btn-hover)]" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
@@ -177,15 +176,13 @@
             <p class="text-gray-400 mb-4 text-sm">You don't have any bookmarks yet. Start adding your favorite
                 websites and applications.</p>
         </div>
-
-        {% endfor %}
     </section>
 
     <!-- View Bookmark Modal -->
     <div id="view-modal"
-        class="hidden fixed z-50 flex justify-center items-center inset-0 overflow-y-auto bg-black bg-opacity-70">
+        class="fixed inset-0 flex items-center justify-center bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
         <div id="view-card"
-            class="relative flex flex-col w-full max-w-lg border-custom-card bg-theme rounded-lg p-5 m-2 max-h-[80vh] overflow-y-auto space-y-4 shadow-lg md:px-6 md:py-8 md:w-full">
+            class="relative flex flex-col w-full max-w-lg border-custom-card bg-theme rounded-lg p-5 m-2 max-h-[80vh] overflow-y-auto space-y-4 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:py-8 md:w-full">
             <div class="absolute top-1.5 right-2 flex space-x-2 md:top-2 md:right-2.5">
                 <!-- Edit button -->
                 <button id="view-editBtn" type="button" aria-label="Edit"
@@ -238,9 +235,9 @@
 
     <!-- Add Bookmark Modal -->
     <div id="add-modal"
-        class="hidden fixed z-50 flex justify-center items-center inset-0 overflow-y-auto bg-black bg-opacity-70">
-        <div id="modalAddBookmark"
-            class="relative border-custom-card w-full max-w-lg bg-theme rounded-lg p-5 m-2 shadow-lg md:px-6 md:p-6 md:w-full">
+        class="fixed z-50 flex justify-center items-center inset-0 overflow-y-auto bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="add-modal-content"
+            class="relative border-custom-card w-full max-w-lg bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
             <div class="flex flex-col space-y-1.5 text-center sm:text-left">
                 <h2 class="text-sm font-semibold leading-none tracking-tight md:text-lg">Add New Bookmark</h2>
                 <p class="text-xs text-muted-foreground md:text-sm">Add a new bookmark to your collection.</p>
@@ -408,9 +405,9 @@
 
     <!-- Edit Bookmark Modal -->
     <div id="edit-modal"
-        class="hidden fixed z-50 flex justify-center items-center inset-0 overflow-y-auto bg-black bg-opacity-70">
-        <div id="modalEditBookmark"
-            class="relative border-custom-card w-full max-w-lg bg-theme rounded-lg p-5 m-2 shadow-lg md:px-6 md:p-6 md:w-full">
+        class="fixed z-50 flex justify-center items-center inset-0 overflow-y-auto bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="edit-modal-content"
+            class="relative border-custom-card w-full max-w-lg bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
             <div class="flex flex-col space-y-1.5 text-center sm:text-left">
                 <h2 class="text-sm font-semibold leading-none tracking-tight md:text-lg">Edit Bookmark</h2>
                 <p class="text-xs text-muted-foreground md:text-sm">Update your bookmark details.</p>

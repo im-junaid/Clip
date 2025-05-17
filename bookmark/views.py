@@ -4,44 +4,23 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import (
-    csrf_exempt,
-)  # or remove if using CSRF middleware
-from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt  # or remove if using CSRF middleware
+from django.db.models import Q
 from .models import Bookmark
 import json
+
 
 
 # home page
 def index(request):
     return render(request, "home/home.html")
 
-
 # dashboard page
 @login_required
 def dashbord(request):
     # get the last 9 bookmarks for this user, newest first
     recent = Bookmark.objects.filter(user=request.user).order_by("-created_at")[:9]
-    return render(
-        request,
-        "dashboard.html",
-        {
-            "bookmarks": recent,
-        },
-    )
-
-
-# @login_required
-# def bookmark_list(request):
-#     # get the last 9 bookmarks for this user, newest first
-#     recent = (
-#         Bookmark.objects
-#         .filter(user=request.user)
-#         .order_by('-created_at')[:9]
-#     )
-#     return render(request, 'bookmarks/list.html', {
-#         'bookmarks': recent,
-#     })
+    return render(request, "dashboard.html", { "bookmarks": recent})
 
 
 # add bookmark
@@ -62,28 +41,25 @@ def add_bookmark(request):
 
     # server-side validation
     if not all([name, desc, platform]):
-        return JsonResponse(
-            {"success": False, "error": "Missing required fields"}, status=400
-        )
+        return JsonResponse({"success": False, "error": "Missing required fields"}, status=400)
 
     if platform not in dict(Bookmark.CATEGORY_CHOICES):
         return JsonResponse({"success": False, "error": "Invalid category"}, status=400)
 
     try:
-        # bm = Bookmark.objects.create(
-        #     user=request.user,
-        #     name=name,
-        #     url=url,
-        #     description=desc,
-        #     platform=platform,
-        #     tags=tags,
-        # )
-        print("\n\nbookmark added")
-        # return JsonResponse({"success": True, "id": bm.id})
-        return JsonResponse({"success": True, "id": "100"})
+        bm = Bookmark.objects.create(
+            user=request.user,
+            name=name,
+            url=url,
+            description=desc,
+            platform=platform,
+            tags=tags,
+        )
+        # print("\n\nbookmark added")
+        return JsonResponse({"success": True, "id": bm.id})
+
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
-
 
 # edit bookmark
 @require_POST
@@ -102,16 +78,12 @@ def edit_bookmark(request):
     tags = data.get("tags", [])
 
     if not all([bm_id, name, desc, platform]):
-        return JsonResponse(
-            {"success": False, "error": "Missing required fields"}, status=400
-        )
+        return JsonResponse({"success": False, "error": "Missing required fields"}, status=400)
 
     try:
         bm = Bookmark.objects.get(id=bm_id, user=request.user)
     except Bookmark.DoesNotExist:
-        return JsonResponse(
-            {"success": False, "error": "Bookmark not found"}, status=404
-        )
+        return JsonResponse({"success": False, "error": "Bookmark not found"}, status=404)
 
     if platform not in dict(Bookmark.CATEGORY_CHOICES):
         return JsonResponse({"success": False, "error": "Invalid platform"}, status=400)
@@ -121,33 +93,28 @@ def edit_bookmark(request):
     bm.description = desc
     bm.platform = platform
     bm.tags = tags
-    # bm.save()
+    bm.save()
 
+    # print("\n\nbookmark updated")
     return JsonResponse({"success": True})
 
-
-# edit bookmark
+# delete bookmark
 @require_http_methods(["POST", "DELETE"])
 @login_required
 def delete_bookmark(request, bookmark_id):
     try:
         bookmark = Bookmark.objects.get(id=bookmark_id, user=request.user)
     except Bookmark.DoesNotExist:
-        return JsonResponse(
-            {"success": False, "error": "Bookmark not found"}, status=404
-        )
+        return JsonResponse({"success": False, "error": "Bookmark not found"}, status=404)
 
     try:
         bookmark.delete()
-        print("\n\nbookmark deleted")
+        # print("\n\nbookmark deleted")
         return JsonResponse({"success": True})
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
-
-
-from django.db.models import Q
-
+# search bookmark
 @login_required
 def search_bookmark(request):
     q       = request.GET.get('q', '').strip()

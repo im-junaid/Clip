@@ -9,7 +9,6 @@ function getCookie(name) {
     return v;
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
 
     // --------- Vars ---------- 
@@ -30,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --------- view modal
 
     const viewModal = document.getElementById('view-modal');
+    const viewCard = document.getElementById('view-card');
     const viewEditBtn = document.getElementById('view-editBtn');
     const viewDeleteBtn = document.getElementById('view-deleteBtn');
     const viewCloseBtn = document.getElementById('view-closeBtn');
@@ -239,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const q = id => document.getElementById(`${prefix}-${id}`);
         const openBtn = q('openBtn'),
             modal = q('modal'),
+            modalContent = q('modal-content'),
             closeBtn = q('closeBtn'),
             cancelBtn = q('cancelBtn'),
             nameIn = q('name'),
@@ -263,13 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function open(resetForm = true) {
-            document.body.classList.add('overflow-hidden');
-            modal.classList.replace('hidden', 'flex');
+            showModal(modal, modalContent);
             if (resetForm) reset();
         }
         function close() {
-            document.body.classList.remove('overflow-hidden');
-            modal.classList.replace('flex', 'hidden');
+            hideModal(modal, modalContent);
             reset();
         }
 
@@ -334,17 +333,16 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(r => r.json())
                 .then(json => {
-                    console.log("json", json);
-                    console.log(tagManager.getTags());
                     if (json.success) {
                         close();
-
+                        let cardElement;
                         if (id) {
-                            defaultCardsInner.prepend(renderCard(false, id, name, url, desc, cat, tags));
-                            
+                            cardElement = renderCard(false, id, name, url, desc, cat, tags);
                         } else {
-                            defaultCardsInner.prepend(renderCard(true, json.id, name, url, desc, cat, tags));
+                            cardElement = renderCard(true, json.id, name, url, desc, cat, tags);
                         }
+                        defaultCardsInner.prepend(cardElement);
+                        checkCardCount();
                         showToast(`Bookmark ${actionLabel} !`, 'success');
                     } else {
                         showToast('Error', 'error');
@@ -374,8 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Always update these
         card.dataset.platform = platform;
         card.dataset.tags = JSON.stringify(tags);
-
-        console.log(" render tag", tags);
 
         // 3. Rebuild innerHTML
         const maxTags = 3;
@@ -411,7 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const addModal = modalFactory('add', 'add/', 'Added');
     const editModal = modalFactory('edit', 'edit/', 'Updated');
 
-
     // --------- veiw modal functions 
 
     let currentCardData = null;
@@ -445,16 +440,17 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         // 3) Show the modal
-        viewModal.classList.remove('hidden');
+        showModal(viewModal, viewCard);
+
     }
 
     viewCloseBtn.addEventListener('click', () => {
-        viewModal.classList.add('hidden');
+        hideModal(viewModal, viewCard);
     });
 
     viewModal.addEventListener('click', e => {
         if (e.target === viewModal) {
-            viewModal.classList.add('hidden');
+            hideModal(viewModal, viewCard);
         }
     });
 
@@ -469,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!currentCardData) return;
         editModal.open(false);
         editModal.fill(currentCardData);
-        viewModal.classList.add('hidden');
+        hideModal(viewModal, viewCard);
 
     });
 
@@ -487,12 +483,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (json.success) {
                     document.querySelector(`.card[data-bm-id="${currentCardData.id}"]`)?.remove();
                     showToast('Deleted', 'success');
-                    viewModal.classList.add('hidden');
+                    checkCardCount();
+                    hideModal(viewModal, viewCard);
                 } else {
                     showToast(json.error || 'Delete failed', 'error');
                 }
             });
     });
+
+
+    // --------- animate open/close modal 
+    
+    function showModal(modalWrapper, modalContent) {
+        document.body.classList.add('overflow-hidden');
+        // Enable interaction
+        modalWrapper.classList.remove('opacity-0', 'pointer-events-none');
+        modalWrapper.classList.add('opacity-100', 'pointer-events-auto');
+    
+        // Animate content
+        modalContent.classList.remove('opacity-0', 'scale-95');
+        modalContent.classList.add('opacity-100', 'scale-100');
+    }
+    
+    function hideModal(modalWrapper, modalContent) {
+        document.body.classList.remove('overflow-hidden');
+        // Start content fade out
+        modalContent.classList.remove('opacity-100', 'scale-100');
+        modalContent.classList.add('opacity-0', 'scale-95');
+    
+        // Start overlay fade out
+        modalWrapper.classList.remove('opacity-100');
+        modalWrapper.classList.add('opacity-0');
+    
+        // Wait for animation to complete, then disable pointer events
+        setTimeout(() => {
+            modalWrapper.classList.add('pointer-events-none');
+            modalWrapper.classList.remove('pointer-events-auto');
+        }, 300); // match Tailwind duration-300
+    }
+
+    // --------- check no bookmarks functions 
+    function checkCardCount() {
+        const cardsContainer = document.getElementById('cards');
+        const noBookmarksMsg = document.getElementById('no-bookmarks');
+    
+        const cardCount = cardsContainer.querySelectorAll('.card').length;
+
+        console.log(cardCount);
+    
+        if (cardCount < 1) {
+            noBookmarksMsg.classList.remove('hidden');
+        } else {
+            noBookmarksMsg.classList.add('hidden');
+        }
+    }
+    checkCardCount();
 
 
     // --------- searching feature functions 
@@ -651,6 +696,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearFilterBtn.addEventListener('click', clearFilters);
 
-
 });
-
