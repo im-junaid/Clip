@@ -5,25 +5,23 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#232327">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#232327">
     <title>{% block title %} {% endblock %}</title>
 
-  <!-- PWA manifest -->
-  <link rel="manifest" href="{% static 'site.webmanifest' %}">
-
-  <!-- Favicons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'icons/apple-touch-icon.png' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icons/favicon-32x32.png' %}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'icons/favicon-16x16.png' %}">
-
-
-
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="{% static 'icons/favicons/favicon-96x96.png' %}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{% static 'icons/favicons/favicon.svg' %}" />
+    <link rel="shortcut icon" href="{% static 'icons/favicons/favicon.ico' %}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'icons/favicons/apple-touch-icon.png' %}" />
+    <meta name="apple-mobile-web-app-title" content="Clip" />
+    <link rel="manifest" href="{% static 'icons/favicons/site.webmanifest' %}" />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Optional: Your custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
     <style>
         /* Loader CSS with variables to avoid duplication */
         .loader-spinner {

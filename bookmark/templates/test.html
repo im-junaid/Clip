@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Modal Animation Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8 space-y-4">
+
+  <h1 class="text-2xl font-bold">Modal Animation Showcase</h1>
+  <p>Click each button to see a different opening/closing animation.</p>
+
+  <div class="space-x-2">
+    <button id="btn-fade"    class="px-4 py-2 bg-purple-600 text-white rounded">Fade</button>
+    <button id="btn-scale"   class="px-4 py-2 bg-green-600  text-white rounded">Scale</button>
+    <button id="btn-slide"   class="px-4 py-2 bg-blue-600   text-white rounded">Slide Down</button>
+    <button id="btn-flip"    class="px-4 py-2 bg-red-600    text-white rounded">Flip</button>
+  </div>
+
+  <!-- Fade Modal -->
+  <div id="modal-fade" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center
+                            opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-purple-100 p-6 rounded shadow-lg w-80">
+      <h2 class="text-purple-800 font-bold mb-4">Fade Modal</h2>
+      <p class="mb-4">This opens/closes with a simple fade.</p>
+      <button data-close class="px-3 py-1 bg-purple-600 text-white rounded">Close</button>
+    </div>
+  </div>
+
+  <!-- Scale Modal -->
+  <div id="modal-scale" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center
+                             opacity-0 pointer-events-none transition-opacity duration-200
+                             scale-95 transform transition-transform duration-200">
+    <div class="bg-green-100 p-6 rounded shadow-lg w-80">
+      <h2 class="text-green-800 font-bold mb-4">Scale Modal</h2>
+      <p class="mb-4">This “pops” in with a zoom effect.</p>
+      <button data-close class="px-3 py-1 bg-green-600 text-white rounded">Close</button>
+    </div>
+  </div>
+
+  <!-- Slide Down Modal -->
+  <div id="modal-slide" class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center
+                             opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-blue-100 mt-[-200px] p-6 rounded shadow-lg w-80
+                transition-transform duration-300">
+      <h2 class="text-blue-800 font-bold mb-4">Slide Down Modal</h2>
+      <p class="mb-4">This slides down from above.</p>
+      <button data-close class="px-3 py-1 bg-blue-600 text-white rounded">Close</button>
+    </div>
+  </div>
+
+  <!-- Flip Modal -->
+  <div id="modal-flip" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center
+                            opacity-0 pointer-events-none perspective-1000">
+    <div class="bg-red-100 p-6 rounded shadow-lg w-80
+                transform rotate-y-90 transition-transform duration-500">
+      <h2 class="text-red-800 font-bold mb-4">Flip Modal</h2>
+      <p class="mb-4">This flips in on its Y axis.</p>
+      <button data-close class="px-3 py-1 bg-red-600 text-white rounded">Close</button>
+    </div>
+  </div>
+
+<script>
+  // Utility to show/hide with animations
+  function setupModal(btnId, modalId, beforeShow, afterShow, beforeHide, afterHide){
+    const btn   = document.getElementById(btnId);
+    const modal = document.getElementById(modalId);
+    const content = modal.firstElementChild;
+
+    function open(){
+      // initial state
+      modal.classList.remove('pointer-events-none');
+      modal.classList.add('opacity-100');
+      beforeShow(content);
+      // delay to let CSS apply
+      requestAnimationFrame(() => {
+        afterShow(content);
+      });
+    }
+    function close(){
+      beforeHide(content);
+      modal.classList.remove('opacity-100');
+      content.addEventListener('transitionend', function cleanup(){
+        modal.classList.add('pointer-events-none');
+        content.removeEventListener('transitionend', cleanup);
+        afterHide(content);
+      });
+    }
+    btn.addEventListener('click', open);
+    modal.querySelector('[data-close]').addEventListener('click', close);
+    modal.addEventListener('click', e => {
+      if(e.target === modal) close();
+    });
+  }
+
+  // Fade
+  setupModal('btn-fade','modal-fade',
+    // beforeShow
+    c => {},
+    // afterShow
+    c => {},
+    // beforeHide
+    c => {},
+    // afterHide
+    c => {}
+  );
+
+  // Scale
+  setupModal('btn-scale','modal-scale',
+    c => {},
+    c => { c.classList.replace('scale-95','scale-100'); },
+    c => {},
+    c => { c.classList.replace('scale-100','scale-95'); }
+  );
+
+  // Slide Down
+  setupModal('btn-slide','modal-slide',
+    c => {},
+    c => { c.classList.replace('mt-[-200px]','mt-20'); },
+    c => {},
+    c => { c.classList.replace('mt-20','mt-[-200px]'); }
+  );
+
+  // Flip
+  setupModal('btn-flip','modal-flip',
+    c => {},
+    c => { c.style.transform = 'rotateY(0deg)'; },
+    c => {},
+    c => { c.style.transform = 'rotateY(90deg)'; }
+  );
+</script>
+
+</body>
+</html>

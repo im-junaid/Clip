@@ -12,6 +12,32 @@ function getCookie(name) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --------- Vars ---------- 
+
+    // --------- searching
+
+    const searchInput = document.getElementById('searchInput');
+    const categoryGroup = document.getElementById('categoryGroup');
+    const tagGroup = document.getElementById('tagGroup');
+    const defaultCards = document.getElementById('defaultCards');
+    const defaultCardsInner = document.getElementById('cards');
+    const searchResults = document.getElementById('searchResults');   // container wrapper section
+    const resultsInner = document.getElementById('searchResultsDiv'); // inner cards div
+    const noResults = document.getElementById('noResults');
+    const clearFilterBtn = document.getElementById('clearFilterBtn');
+    const filterSummary = document.getElementById('filterSummary');
+
+    // --------- view modal
+
+    const viewModal = document.getElementById('view-modal');
+    const viewEditBtn = document.getElementById('view-editBtn');
+    const viewDeleteBtn = document.getElementById('view-deleteBtn');
+    const viewCloseBtn = document.getElementById('view-closeBtn');
+    const viewName = document.getElementById('view-name');
+    const viewUrl = document.getElementById('view-url');
+    const viewDescription = document.getElementById('view-description');
+    const viewTags = document.getElementById('view-tags');
+
 
     // --------- Bookmark add, edit, delete, functions 
 
@@ -296,6 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = submitBtn.dataset.id;
             if (id) payload.id = id;
 
+            const tags = tagManager.getTags();
+
             fetch(endpoint, {
                 method: 'POST',
                 headers: {
@@ -306,8 +334,17 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(r => r.json())
                 .then(json => {
+                    console.log("json", json);
+                    console.log(tagManager.getTags());
                     if (json.success) {
                         close();
+
+                        if (id) {
+                            defaultCardsInner.prepend(renderCard(false, id, name, url, desc, cat, tags));
+                            
+                        } else {
+                            defaultCardsInner.prepend(renderCard(true, json.id, name, url, desc, cat, tags));
+                        }
                         showToast(`Bookmark ${actionLabel} !`, 'success');
                     } else {
                         showToast('Error', 'error');
@@ -322,24 +359,143 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    function renderCard(isNew, id, name, url, description, platform, tags) {
+        // 1. Decide whether to create or select
+        let card;
+        if (isNew) {
+            card = document.createElement('div');
+            card.className = 'card p-4 md:p-6 relative cursor-pointer';
+            card.dataset.bmId = id;
+        } else {
+            card = document.querySelector(`.card[data-bm-id="${id}"]`);
+            if (!card) return; // nothing to update
+        }
+
+        // 2. Always update these
+        card.dataset.platform = platform;
+        card.dataset.tags = JSON.stringify(tags);
+
+        console.log(" render tag", tags);
+
+        // 3. Rebuild innerHTML
+        const maxTags = 3;
+        const visibleTags = tags.slice(0, maxTags);
+        const extraCount = tags.length - maxTags;
+        const tagsHtml = visibleTags
+            .map(t => `<span class="text-[10px] sm:text-xs md:text-sm tag">${t}</span>`)
+            .join(' ');
+        const moreHtml = extraCount > 0
+            ? `<span class="text-[10px] sm:text-xs md:text-sm tag">+${extraCount}</span>`
+            : '';
+
+        card.innerHTML = `
+            <h3 class="mb-2 font-semibold text-lg md:text-xl truncate">${name}</h3>
+            <a href="${url}" target="_blank"
+                class="url inline-block text-[#58a6ff] mb-3 break-all text-xs truncate md:text-sm hover:underline">
+                ${url}
+            </a>
+            <p class="text-xs text-gray-400 mb-3 leading-[1.4] line-clamp-2">${description}</p>
+            <div class="tags mt-3 flex flex-wrap gap-1 md:gap-2 max-h-[1.5rem] md:max-h-[2rem] overflow-hidden">
+                <span class="text-[10px] md:text-xs tag">${platform}</span>
+                ${tagsHtml}
+                ${moreHtml}
+            </div>
+            `;
+
+        // 4. If new, prepend; if existing, nothing else to do
+        if (isNew) {
+            return card;
+        }
+    }
 
     const addModal = modalFactory('add', 'add/', 'Added');
     const editModal = modalFactory('edit', 'edit/', 'Updated');
 
 
+    // --------- veiw modal functions 
+
+    let currentCardData = null;
+
+    function openViewModal(card) {
+        // 1) Build the data object & stash it
+        const data = {
+            id: card.dataset.bmId,
+            name: card.querySelector('h3').textContent,
+            url: card.querySelector('a.url')?.href || '#',
+            description: card.querySelector('p')?.textContent || '',
+            platform: card.dataset.platform,
+            tags: JSON.parse(card.dataset.tags || '[]'),
+        };
+        currentCardData = data;
+
+        // 2) Populate the modal fields
+        viewName.textContent = data.name;
+        viewUrl.textContent = data.url;
+        viewUrl.href = data.url;
+        viewDescription.textContent = data.description;
+
+        const tagsHtml = data.tags
+            .map(t => `<span class="text-[10px] sm:text-xs md:text-sm tag">${t}</span>`)
+            .join('');
+
+        viewTags.innerHTML = `
+            <span class="text-[10px] sm:text-xs md:text-sm tag">
+            ${data.platform} </span>
+            ${tagsHtml}
+        `;
+
+        // 3) Show the modal
+        viewModal.classList.remove('hidden');
+    }
+
+    viewCloseBtn.addEventListener('click', () => {
+        viewModal.classList.add('hidden');
+    });
+
+    viewModal.addEventListener('click', e => {
+        if (e.target === viewModal) {
+            viewModal.classList.add('hidden');
+        }
+    });
+
+    document.body.addEventListener('click', e => {
+        const card = e.target.closest('.card');
+        if (!card) return;
+        openViewModal(card);
+    });
+
+    // Then your Edit button in the modal can use that same `currentCardData`:
+    viewEditBtn.addEventListener('click', () => {
+        if (!currentCardData) return;
+        editModal.open(false);
+        editModal.fill(currentCardData);
+        viewModal.classList.add('hidden');
+
+    });
+
+    // And your Delete button:
+    viewDeleteBtn.addEventListener('click', () => {
+        if (!currentCardData) return;
+        if (!confirm('Delete this bookmark?')) return;
+
+        fetch(`delete/${currentCardData.id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        })
+            .then(r => r.json())
+            .then(json => {
+                if (json.success) {
+                    document.querySelector(`.card[data-bm-id="${currentCardData.id}"]`)?.remove();
+                    showToast('Deleted', 'success');
+                    viewModal.classList.add('hidden');
+                } else {
+                    showToast(json.error || 'Delete failed', 'error');
+                }
+            });
+    });
 
 
     // --------- searching feature functions 
-
-    const searchInput = document.getElementById('searchInput');
-    const categoryGroup = document.getElementById('categoryGroup');
-    const tagGroup = document.getElementById('tagGroup');
-    const defaultCards = document.getElementById('defaultCards');
-    const searchResults = document.getElementById('searchResults');   // container wrapper section
-    const resultsInner = document.getElementById('searchResultsDiv'); // inner cards div
-    const noResults = document.getElementById('noResults');
-    const clearFilterBtn = document.getElementById('clearFilterBtn');
-    const filterSummary = document.getElementById('filterSummary');
 
     let selectedCategory = '';
     let selectedTags = [];
@@ -384,8 +540,6 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsInner.innerHTML = '';
 
             if (json.results.length) {
-                // noResults.classList.add('hidden');
-                // searchResults.classList.remove('hidden');
 
                 // Show search results
                 searchResults.classList.remove('opacity-0', 'max-h-0');
@@ -399,63 +553,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultsInner.classList.add('opacity-100', 'max-h-[1000px]');
 
                 json.results.forEach(bm => {
-                    const card = document.createElement('div');
-                    card.className = 'card p-4 md:p-6 relative cursor-pointer';
-                    card.dataset.bmId = bm.id;
-                    card.dataset.platform = bm.platform;
-                    card.dataset.tags = JSON.stringify(bm.tags);
 
-                    // Build tag spans (max 3 + “+N”)
-                    const maxTags = 3;
-                    const visibleTags = bm.tags.slice(0, maxTags);
-                    const extraCount = bm.tags.length - maxTags;
-                    const tagsHtml = visibleTags
-                        .map(t => `<span class="text-[10px] sm:text-xs md:text-sm tag">${t}</span>`)
-                        .join(' ');
-                    const moreHtml = extraCount > 0
-                        ? `<span class="text-[10px] sm:text-xs md:text-sm tag">+${extraCount}</span>`
-                        : '';
-
-                    card.innerHTML = `
-                        <div class="absolute top-1.5 right-2 flex space-x-2">
-                            <!-- Edit button -->
-                            <button id="edit-openBtn" type="button" aria-label="Edit"
-                                class="inline-flex items-center justify-center h-8 px-2 text-xs font-medium text-gray-500 transition-colors bg-transparent rounded-xl hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-blue-400 disabled:opacity-50 disabled:pointer-events-none"
-                                data-action="edit" data-id="${bm.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
-                                </svg>
-                            </button>
-
-                            <!-- Delete button -->
-                            <button type="button" aria-label="Delete"
-                                class="inline-flex items-center justify-center h-8 px-2 text-xs font-medium text-gray-500 transition-colors bg-transparent rounded-xl hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-red-400 disabled:opacity-50 disabled:pointer-events-none"
-                                data-action="delete" data-id="${bm.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M3 6h18"></path>
-                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                            </button>
-                        </div>
-                        <h3 class="mb-2 font-semibold text-lg md:text-xl truncate">${bm.name}</h3>
-                        <a href="${bm.url}" target="_blank"
-                            class="url inline-block text-[#58a6ff] mb-3 break-all text-xs truncate md:text-sm hover:underline">
-                            ${bm.url}
-                        </a>
-                        <p class="text-xs text-gray-400 mb-3 leading-[1.4] line-clamp-2">${bm.description}</p>
-                        <div class="tags mt-3 flex flex-wrap gap-1 md:gap-2 max-h-[1.5rem] md:max-h-[2rem] overflow-hidden">
-                            <span class="text-[10px] md:text-xs tag">${bm.platform}</span>
-                            ${tagsHtml}
-                            ${moreHtml}
-                        </div>
-                        `;
-                    resultsInner.appendChild(card);
+                    resultsInner.appendChild(renderCard(true, bm.id, bm.name, bm.url, bm.description, bm.platform, bm.tags));
                 });
             } else {
 
@@ -465,7 +564,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Hide “no results”
                 noResults.classList.remove('opacity-0');
                 noResults.classList.add('opacity-100');
-                console.log("request true");
             }
         } catch (e) {
             console.error('Search error:', e);
@@ -524,7 +622,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('bg-[#703edb]');
         }
         debouncedSearch();
-        console.log(selectedTags);
     });
 
     function clearFilters() {
@@ -553,172 +650,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     clearFilterBtn.addEventListener('click', clearFilters);
-
-
-
-    const viewModal = document.getElementById('view-modal');
-    const viewEditBtn = document.getElementById('view-editBtn');
-    const viewDeleteBtn = document.getElementById('view-deleteBtn');
-    const viewCloseBtn = document.getElementById('view-closeBtn');
-    const viewName = document.getElementById('view-name');
-    const viewUrl = document.getElementById('view-url');
-    const viewDescription = document.getElementById('view-description');
-    const viewPlatform = document.getElementById('view-platform');
-    const viewTags = document.getElementById('view-tags');
-
-
-    let currentCardData = null;
-
-    function openViewModal(card) {
-        // 1) Build the data object & stash it
-        const data = {
-            id: card.dataset.bmId,
-            name: card.querySelector('h3').textContent,
-            url: card.querySelector('a.url')?.href || '#',
-            description: card.querySelector('p')?.textContent || '',
-            platform: card.dataset.platform,
-            tags: JSON.parse(card.dataset.tags || '[]'),
-        };
-        currentCardData = data;
-
-        // 2) Populate the modal fields
-        viewName.textContent = data.name;
-        viewUrl.textContent = data.url;
-        viewUrl.href = data.url;
-        viewDescription.textContent = data.description;
-        viewPlatform.textContent = data.platform;
-
-        viewTags.innerHTML = data.tags
-            .map(t => `<span class="text-[10px] sm:text-xs md:text-sm tag">${t}</span>`)
-            .join('');
-
-        // 3) Show the modal
-        viewModal.classList.remove('hidden');
-    }
-
-    viewCloseBtn.addEventListener('click', () => {
-        viewModal.classList.add('hidden');
-    });
-    console.log('close btn:', viewCloseBtn);
-    
-    viewModal.addEventListener('click', e => {
-        if (e.target === viewModal) {
-            viewModal.classList.add('hidden');
-        }
-    });
-
-    document.body.addEventListener('click', e => {
-        const card = e.target.closest('.card');
-        if (!card) return;
-        console.log("open");
-        openViewModal(card);
-    });
-
-    // Then your Edit button in the modal can use that same `currentCardData`:
-    viewEditBtn.addEventListener('click', () => {
-        if (!currentCardData) return;
-        editModal.open(false);
-        editModal.fill(currentCardData);
-        viewModal.classList.add('hidden');
-
-    });
-
-    // And your Delete button:
-    viewDeleteBtn.addEventListener('click', () => {
-        if (!currentCardData) return;
-        if (!confirm('Delete this bookmark?')) return;
-
-        fetch(`delete/${currentCardData.id}/`, {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': getCookie('csrftoken') }
-        })
-            .then(r => r.json())
-            .then(json => {
-                if (json.success) {
-                    document.querySelector(`.card[data-bm-id="${currentCardData.id}"]`)?.remove();
-                    showToast('Deleted', 'success');
-                    viewModal.classList.add('hidden');
-                } else {
-                    showToast(json.error || 'Delete failed', 'error');
-                }
-            });
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // function openViewModal(card) {
-    //     const name = card.querySelector('h3').textContent;
-    //     const url = card.querySelector('a.url')?.href || '#';
-    //     const desc = card.querySelector('p')?.textContent || '';
-    //     const platform = card.dataset.platform;
-    //     const tags = JSON.parse(card.dataset.tags || '[]');
-
-    //     viewCard.dataset.bmId = card.dataset.bmId;
-    //     viewCard.dataset.platform = platform;
-    //     viewCard.dataset.tags = card.dataset.tags;
-
-    //     viewName.textContent = name;
-    //     viewUrl.textContent = url;
-    //     viewUrl.href = url;
-    //     viewDescription.textContent = desc;
-
-    //     viewTags.innerHTML = '';
-    //     viewPlatform.textContent = platform;
-    //     tags.forEach(t => {
-    //         const span = document.createElement('span');
-    //         span.className = 'text-[10px] sm:text-xs md:text-sm tag';
-    //         span.textContent = t;
-    //         viewTags.appendChild(span);
-    //     });
-
-    //     viewModal.classList.remove('hidden');
-    // }
-
-    // // Close handler
-    // viewCloseBtn.addEventListener('click', () => {
-    //     viewModal.classList.add('hidden');
-    //     console.log("click close");
-    // });
-    // // click outside to close
-    // viewModal.addEventListener('click', e => {
-    //     if (e.target === viewModal) viewModal.classList.add('hidden');
-    // });
-
-    // // Delegate clicks on cards (but ignore clicks on edit/delete buttons)
-    // document.body.addEventListener('click', e => {
-    //     const card = e.target.closest('.card');
-    //     if (!card) return;
-
-    //     // if clicked an inner edit/delete button, bail
-    //     if (e.target.closest('button[data-action]')) return;
-
-    //     openViewModal(card);
-    // });
-
-
 
 
 });
