@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-%23duqk)af1cd^5!j8x9al73=&*2$5z4g-_g9^r6)e$zf+zptp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -53,7 +53,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "clip.urls"
 LOGIN_URL = "/auth/login/"
-
+LOGIN_REDIRECT_URL = '/' 
+LOGOUT_REDIRECT_URL = '/' 
 
 TEMPLATES = [
     {
@@ -91,10 +92,6 @@ DATABASES = {
     'PASSWORD': 'root',
     'HOST':     'localhost',
     'PORT':     '5432',
-  },
-  'sqlite': {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME':   BASE_DIR / 'db.sqlite3',
   }
 }
 
@@ -116,6 +113,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+
+STATIC_URL = "static/"
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -128,13 +134,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'riderentals10@gmail.com'
+EMAIL_HOST_PASSWORD = 'kxry neao zbtt ihzt'
+# DEFAULT_FROM_EMAIL  = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "Clip" + EMAIL_HOST_USER
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = "static/"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

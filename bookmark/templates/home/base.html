@@ -16,9 +16,6 @@
     <meta name="apple-mobile-web-app-title" content="Clip" />
     <link rel="manifest" href="{% static 'icons/favicons/site.webmanifest' %}" />
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <!-- Optional: Your custom CSS -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
@@ -96,6 +93,9 @@
         }
     </style>
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     {% block head %} {% endblock %}
 </head>
 
@@ -166,7 +166,7 @@
                 </svg>
                 Sign In</a>
             <a href="{% url 'signup' %}"
-                class="flex items-center mr-0.5 text-sm rounded-xl px-4 py-2 bg-[var(--btn-bg)] text-white border-none hover:bg-[#703edb] md:mr-2 md:text-base">
+                class="flex items-center mr-0.5 text-sm rounded-xl px-3 py-2 bg-[var(--btn-bg)] text-white border-none hover:bg-[#703edb] md:mr-2 md:text-base md:px-4">
                 <svg class="w-4 h-4 mr-1 md:mr-2" xmlns="http://www.w3.org/2000/svg" class="nav-icon" width="24"
                     height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">

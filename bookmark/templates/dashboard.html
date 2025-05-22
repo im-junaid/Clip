@@ -2,7 +2,7 @@
 {% load static %}
 {% load static json_extras %}
 
-{% block title %} Clip - Bookmark Manager {% endblock %}
+{% block title %} Clip - Dashboard {% endblock %}
 
 {% block head %}{% endblock %}
 
@@ -125,7 +125,7 @@
 
 
     <!-- Bookmark deafult list -->
-    <section id="defaultCards">
+    <section id="defaultCards" class="relative">
         <h2 class="text-white font-bold text-base mt-8 md:text-lg">📂 Your Bookmark Library</h2>
         <div id="cards" class="grid grid-cols-1 gap-4 mt-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
 
@@ -164,7 +164,7 @@
 
         {% endfor %}
         <!-- No bookmark found -->
-        <div id="no-bookmarks" class="hidden flex flex-col items-center justify-center mt-10 text-center">
+        <div id="no-bookmarks" class="hidden col-span-full flex flex-col items-center justify-center mt-10 text-center">
             <div class="bg-[#232B3A] rounded-full p-5 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[var(--btn-hover)]" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
@@ -180,9 +180,9 @@
 
     <!-- View Bookmark Modal -->
     <div id="view-modal"
-        class="fixed inset-0 flex items-center justify-center bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
+    class="fixed z-50 flex justify-center items-center p-8 inset-0 bg-black/60 backdrop-blur transition-opacity duration-300 opacity-0 pointer-events-none">
         <div id="view-card"
-            class="relative flex flex-col w-full max-w-lg border-custom-card bg-theme rounded-lg p-5 m-2 max-h-[80vh] overflow-y-auto space-y-4 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:py-8 md:w-full">
+            class="relative flex flex-col w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-y-auto border-custom-card bg-theme rounded-lg p-5 m-2 max-h-[80vh] overflow-y-auto space-y-4 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:py-8 md:w-full">
             <div class="absolute top-1.5 right-2 flex space-x-2 md:top-2 md:right-2.5">
                 <!-- Edit button -->
                 <button id="view-editBtn" type="button" aria-label="Edit"
@@ -235,12 +235,12 @@
 
     <!-- Add Bookmark Modal -->
     <div id="add-modal"
-        class="fixed z-50 flex justify-center items-center inset-0 overflow-y-auto bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
+        class="fixed z-50 flex justify-center items-center p-8 inset-0 bg-black/60 backdrop-blur transition-opacity duration-300 opacity-0 pointer-events-none">
         <div id="add-modal-content"
-            class="relative border-custom-card w-full max-w-lg bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
+            class="relative border-custom-card w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-y-auto bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
             <div class="flex flex-col space-y-1.5 text-center sm:text-left">
                 <h2 class="text-sm font-semibold leading-none tracking-tight md:text-lg">Add New Bookmark</h2>
-                <p class="text-xs text-muted-foreground md:text-sm">Add a new bookmark to your collection.</p>
+                <p class="text-xs text-gray-400 md:text-sm">Add a new bookmark to your collection.</p>
             </div>
             <button type="button" id="add-closeBtn"
                 class="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-offset-purple-700 disabled:pointer-events-none">
@@ -249,7 +249,6 @@
                     <path d="M18 6 6 18"></path>
                     <path d="m6 6 12 12"></path>
                 </svg>
-                <span class="sr-only">Close</span>
             </button>
 
             <div class="grid gap-4 pt-4">
@@ -388,7 +387,6 @@
                     </div>
                 </div>
 
-
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:space-x-2">
                     <button id="add-cancelBtn"
                         class="inline-flex items-center justify-center items-center text-xs font-medium  gap-2 h-10 px-4 py-2 border-custom-card  whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-theme hover:bg-accent hover:text-accent-foreground md:text-sm">
@@ -405,12 +403,12 @@
 
     <!-- Edit Bookmark Modal -->
     <div id="edit-modal"
-        class="fixed z-50 flex justify-center items-center inset-0 overflow-y-auto bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
+    class="fixed z-50 flex justify-center items-center p-8 inset-0 bg-black/60 backdrop-blur transition-opacity duration-300 opacity-0 pointer-events-none">
         <div id="edit-modal-content"
-            class="relative border-custom-card w-full max-w-lg bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
+        class="relative border-custom-card w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-y-auto bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
             <div class="flex flex-col space-y-1.5 text-center sm:text-left">
                 <h2 class="text-sm font-semibold leading-none tracking-tight md:text-lg">Edit Bookmark</h2>
-                <p class="text-xs text-muted-foreground md:text-sm">Update your bookmark details.</p>
+                <p class="text-xs text-gray-400 md:text-sm">Update your bookmark details.</p>
             </div>
 
             <button type="button" id="edit-closeBtn"
