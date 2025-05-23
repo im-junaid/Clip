@@ -99,6 +99,8 @@ DATABASES = {
     )
 }
 
+print("DATABASE_URL is:", os.getenv("DATABASE_URL"))
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
