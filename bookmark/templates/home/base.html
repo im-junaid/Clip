@@ -131,6 +131,10 @@
             {% if user.is_authenticated %}
             <a class="ml-3.5 text-base font-medium transition-colors hover:text-gray-400"
                 href="{% url 'bookmark' %}">Bookmarks</a>
+            {% if user.is_staff %}
+            <a class="ml-3.5 text-base font-medium transition-colors hover:text-gray-400"
+                href="/admin/">Admin-dashboard</a>
+            {% endif %}
         </div>
         <div class="flex items-center">
             <span class="flex items-center mr-2 md:mr-4">

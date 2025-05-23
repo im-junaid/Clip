@@ -52,7 +52,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "clip.urls"
-LOGIN_URL = "/auth/login/"
+LOGIN_URL = 'signin'
 LOGIN_REDIRECT_URL = '/' 
 LOGOUT_REDIRECT_URL = '/' 
 
@@ -142,5 +142,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'riderentals10@gmail.com'
 EMAIL_HOST_PASSWORD = 'kxry neao zbtt ihzt'
 # DEFAULT_FROM_EMAIL  = EMAIL_HOST_USER
-DEFAULT_FROM_EMAIL = "Clip" + EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "Clip Support <riderentals10@gmail.com>"
 
+PASSWORD_RESET_EMAIL_HTML = 'emails/password_reset_email.html'

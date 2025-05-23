@@ -1,13 +1,16 @@
-from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth.views import PasswordResetView
-from django.contrib.auth.forms import SetPasswordForm
-from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
+
+from django.template.loader import render_to_string
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMultiAlternatives
+from django.urls import reverse_lazy
+
 
 # ------------------------------------
 #          Authentication
@@ -81,14 +84,28 @@ def signout_view(request):
 
 
 # password-reset-view
+    
 class CustomPasswordResetView(PasswordResetView):
+    template_name = "password_reset_form.html"
+    email_template_name = "emails/password_reset_email.txt"
+    html_email_template_name = "emails/password_reset_email.html"
+    success_url = reverse_lazy('password_reset_done')
+    from_email = "Clip Support <riderentals10@gmail.com>"
+
     def form_valid(self, form):
-        # Check if the email exists in the database
         email = form.cleaned_data["email"]
         if not User.objects.filter(email=email).exists():
-            messages.error(
-                self.request, "The email address does not exist in our records."
-            )
-            return redirect("password_reset")  # Redirect to the same page
+            messages.error(self.request, "The email address does not exist in our records.")
+            return redirect("password_reset")
         return super().form_valid(form)
 
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        subject = "Reset your password"
+        body = render_to_string(email_template_name, context)
+        email_message = EmailMultiAlternatives(subject, body, self.from_email, [to_email])
+        if html_email_template_name:
+            html_email = render_to_string(html_email_template_name, context)
+            email_message.attach_alternative(html_email, 'text/html')
+        email_message.send()
+        

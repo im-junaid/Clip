@@ -9,11 +9,8 @@ urlpatterns = [
     path("signup/", views.signup_view, name="signup"),
     path("signout/", views.signout_view, name="signout"),
     # Password reset URLs
-    path(
-        "password_reset/",
-        views.CustomPasswordResetView.as_view(template_name="password_reset_form.html"),
-        name="password_reset",
-    ),
+    path("password_reset/", views.CustomPasswordResetView.as_view(), name="password_reset"),
+    
     path(
         "password_reset_done/",
         auth_views.PasswordResetDoneView.as_view(
