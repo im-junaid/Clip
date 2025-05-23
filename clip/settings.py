@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%23duqk)af1cd^5!j8x9al73=&*2$5z4g-_g9^r6)e$zf+zptp"
+SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-%23duqk)af1cd^5!j8x9al73=&*2$5z4g-_g9^r6)e$zf+zptp")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+if os.environ.get('RAILWAY_PUBLIC_DOMAIN'):
+    ALLOWED_HOSTS.append(os.environ['RAILWAY_PUBLIC_DOMAIN'])
 
 
 # Application definition
@@ -39,10 +43,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounts",
     "bookmark",
+    "whitenoise.runserver_nostatic", # For serving static files in production
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware", # For serving static files in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -85,14 +91,10 @@ WSGI_APPLICATION = "clip.wsgi.application"
 # }
 
 DATABASES = {
-  'default': {
-    'ENGINE':   'django.db.backends.postgresql',
-    'NAME':     'clipdb',
-    'USER':     'clipuser',
-    'PASSWORD': 'root',
-    'HOST':     'localhost',
-    'PORT':     '5432',
-  }
+    'default': dj_database_url.config(
+        default='postgres://clipuser:root@localhost:5432/clipdb',
+        conn_max_age=600
+    )
 }
 
 # Password validation
@@ -117,6 +119,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -138,10 +142,9 @@ USE_TZ = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'riderentals10@gmail.com'
-EMAIL_HOST_PASSWORD = 'kxry neao zbtt ihzt'
-# DEFAULT_FROM_EMAIL  = EMAIL_HOST_USER
+EMAIL_USE_TLS = 'True'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'riderentals10@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'kxry neao zbtt ihzt')
 DEFAULT_FROM_EMAIL = "Clip Support <riderentals10@gmail.com>"
 
 PASSWORD_RESET_EMAIL_HTML = 'emails/password_reset_email.html'

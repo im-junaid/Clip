@@ -1,4 +1,10 @@
-.venv/
-.vscode/
-__pycache__/
-.env
+.git
+.gitignore
+.vscode
+__pycache__
+*.pyc
+*.sqlite3
+local_settings.py
+media/
+static/
+venv/
