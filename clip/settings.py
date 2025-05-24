@@ -29,7 +29,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-%23duqk)af1cd^5!j8x9a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ["nccb1crack.pythonanywhere.com"]
+# ALLOWED_HOSTS = ["*"]
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
 
@@ -82,27 +84,24 @@ WSGI_APPLICATION = "clip.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     },
-# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+        'NAME': os.environ.get('DB_NAME'),        # Database name
+        'USER': os.environ.get('DB_USER'),        # Database user
+        'PASSWORD': os.environ.get('DB_PASSWORD'),# Database password
+        'HOST': os.environ.get('DB_HOST'),        # Supabase host
+        'PORT': os.environ.get('DB_PORT', '5432'),# Default PostgreSQL port
+        
+        'OPTIONS': {'sslmode': 'require'},  # SSL for Supabase
+        'CONN_MAX_AGE': 600,  # Connection pooling
     }
 }
 
-# CSRF_TRUSTED_ORIGINS = [
-#     "",
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    "nccb1crack.pythonanywhere.com",
+]
 
 
 # Password validation
@@ -129,6 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+WHITENOISE_MANIFEST_STRICT = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -150,7 +150,7 @@ USE_TZ = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = 'True'
+EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = "Clip Support <riderentals10@gmail.com>"
