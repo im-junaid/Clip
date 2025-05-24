@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-%23duqk)af1cd^5!j8x9a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ["clip-bookmark.up.railway.app"]
+ALLOWED_HOSTS = ["clip-production.up.railway.app"]
 
 # Application definition
 
@@ -99,7 +99,7 @@ else :
     print("\n\n --------- DB connection error --------\n\n")
 
 CSRF_TRUSTED_ORIGINS = [
-    "clip-bookmark.up.railway.app",
+    "clip-production.up.railway.app",
 ]
 
 
