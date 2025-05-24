@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-%23duqk)af1cd^5!j8x9a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ["clip-production.up.railway.app"]
+ALLOWED_HOSTS = ["nccb1crack.pythonanywhere.com"]
 
 # Application definition
 
@@ -89,18 +89,20 @@ WSGI_APPLICATION = "clip.wsgi.application"
 #     },
 # }
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
-else :
-    print("\n\n --------- DB connection error --------\n\n")
+}
 
-CSRF_TRUSTED_ORIGINS = [
-    "clip-production.up.railway.app",
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     "",
+# ]
 
 
 # Password validation
