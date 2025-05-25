@@ -28,9 +28,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-Host_server_ip = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-ALLOWED_HOSTS = Host_server_ip
-CSRF_TRUSTED_ORIGINS = Host_server_ip
+ALLOWED_HOSTS = ["https://clip-4cwe.onrender.com"]
+CSRF_TRUSTED_ORIGINS = ["https://clip-4cwe.onrender.com"]
 
 # Application definition
 
