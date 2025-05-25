@@ -24,14 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', "django-insecure-%23duqk)af1cd^5!j8x9al73=&*2$5z4g-_g9^r6)e$zf+zptp")
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-
-# ALLOWED_HOSTS = ["*"]
-
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+Host_server_ip = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = Host_server_ip
+CSRF_TRUSTED_ORIGINS = Host_server_ip
 
 # Application definition
 
@@ -94,15 +93,10 @@ DATABASES = {
         'HOST': os.environ.get('DB_HOST'),        # Supabase host
         'PORT': os.environ.get('DB_PORT', '5432'),# Default PostgreSQL port
         
-        'OPTIONS': {'sslmode': 'require'},  # SSL for Supabase
+        # 'OPTIONS': {'sslmode': 'require'},  # SSL for Supabase
         'CONN_MAX_AGE': 600,  # Connection pooling
     }
 }
-
-CSRF_TRUSTED_ORIGINS = [
-    "nccb1crack.pythonanywhere.com",
-]
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
