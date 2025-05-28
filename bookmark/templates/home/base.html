@@ -19,6 +19,9 @@
     <!-- Optional: Your custom CSS -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
+    <link href="{% static 'css/tailwind.css' %}" rel="stylesheet">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+
     <style>
         /* Loader CSS with variables to avoid duplication */
         .loader-spinner {
@@ -92,9 +95,6 @@
             }
         }
     </style>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
 
     {% block head %} {% endblock %}
 </head>
