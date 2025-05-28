@@ -1,0 +1,9 @@
+# deploy-anywhere/.gitattributes
+clip/settings.py       merge=ours
+requirements.txt       merge=ours
+.gitignore             merge=ours
+
+package-lock.json      merge=ours
+package.json           merge=ours
+tailwind.config.js     merge=ours
+tailwindcss-build.txt  merge=ours
