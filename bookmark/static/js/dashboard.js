@@ -528,8 +528,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const noBookmarksMsg = document.getElementById('no-bookmarks');
     
         const cardCount = cardsContainer.querySelectorAll('.card').length;
-
-        console.log(cardCount);
     
         if (cardCount < 1) {
             noBookmarksMsg.classList.remove('hidden');

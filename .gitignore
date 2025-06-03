@@ -2,6 +2,9 @@
 .vscode/
 node_modules/
 
+# build files
+tailwind.config.js
+
 ### Django ###
 *.log
 *.pot

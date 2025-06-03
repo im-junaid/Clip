@@ -3,11 +3,16 @@ from django.contrib.auth import views as auth_views
 from .forms import CustomSetPasswordForm
 from . import views
 
+app_name = 'accounts'
+
 urlpatterns = [
     # Authentication URLs
     path("signin/", views.signin_view, name="signin"),
     path("signup/", views.signup_view, name="signup"),
     path("signout/", views.signout_view, name="signout"),
+    path("profile/", views.profile_view, name="profile"),
+    path('change-email/', views.change_email, name='change_email'),
+    path('change-password/', views.change_password, name='change_password'),
     # Password reset URLs
     path("password_reset/", views.CustomPasswordResetView.as_view(), name="password_reset"),
     
