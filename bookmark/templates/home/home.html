@@ -13,11 +13,11 @@
     <div class="p-8 text-center md:px-8 md:py-12 lg:px-16 lg:py-16 max-w-3xl mx-auto">
         <h1 class="text-3xl font-bold md:text-5xl">Organize your bookmarks with <span class="highlight">Clip</span></h1>
         <p class="text-xs mt-2 mb-4 max-w-[600px] mx-auto leading-normal text-[#c9d1d9] md:text-lg md:mt-4 md:mb-5">A modern bookmark management system for web, mobile, and desktop applications. Keep your digital life organized with powerful tagging and search.</p>
-        <a href="{% url 'bookmark' %}" class="mt-4 text-xs inline-block bg-[var(--btn-bg)] text-white py-3 px-6 rounded-xl cursor-pointer hover:bg-[var(--btn-hover)] lg:text-lg">Get Started</a>
+        <a href="{% url 'bookmark:bookmarks' %}" class="mt-4 text-xs inline-block bg-[var(--btn-bg)] text-white py-3 px-6 rounded-xl cursor-pointer hover:bg-[var(--btn-hover)] lg:text-lg">Get Started</a>
     </div>
 </section>
 
-<section class="min-h-90 flex items-center justify-center">
+<section class="flex items-center justify-center">
     <div class="p-5 text-center md:px-8 md:py-10 lg:px-16 lg:py-12 max-w-7xl mx-auto">
         <h2 class="font-bold mb-2 text-xl leading-none md:text-3xl">Demo Bookmarks</h2>
         <p class="text-xs mt-2 mb-8 md:text-lg text-gray-400">Check out some example bookmarks to see how Taggy helps you organize your digital life.</p>
@@ -26,7 +26,7 @@
             <div class="card p-4 md:p-6">
                 <h3 class="mb-2 font-semibold text-lg md:text-xl truncate">React Documentation</h3>
                 <a href="https://reactjs.org/docs/getting-started.html" class="inline text-[#58a6ff] mb-3 break-all text-xs hover:underline md:text-sm">https://reactjs.org/docs/getting-started.html</a>
-                <p class="text-sm mb-2 mt-2 leading-[1.4] text-gray-400 mb-2 leading-[1.4] md:mb-3">Official React documentation for learning React</p>
+                <p class="text-sm mb-2 mt-2 text-gray-400 leading-[1.4] md:mb-3">Official React documentation for learning React</p>
                 <div class="tags mt-2 flex flex-wrap gap-2">
                     <span class="text-[10px] md:text-xs tag">Development</span>
                     <span class="text-[10px] md:text-xs tag">Education</span>
@@ -35,7 +35,7 @@
             <div class="card p-4 md:p-6">
                 <h3 class="mb-2 font-semibold text-lg md:text-xl truncate">Figma</h3>
                 <a href="https://www.figma.com" class="inline text-[#58a6ff] mb-3 break-all text-xs hover:underline md:text-sm">https://www.figma.com</a>
-                <p class="text-sm mb-2 mt-2 leading-[1.4] text-gray-400 mb-2 leading-[1.4] md:mb-3">Design, prototype, and collaborate all in the browser</p>
+                <p class="text-sm mb-2 mt-2 text-gray-400 leading-[1.4] md:mb-3">Design, prototype, and collaborate all in the browser</p>
                 <div class="tags mt-2 flex flex-wrap gap-2">
                     <span class="text-[10px] md:text-xs tag">Design</span>
                     <span class="text-[10px] md:text-xs tag">Productivity</span>
@@ -44,7 +44,7 @@
             <div class="card p-4 md:p-6">
                 <h3 class="mb-2 font-semibold text-lg md:text-xl truncate">Visual Studio Code</h3>
                 <a href="https://code.visualstudio.com/" class="inline text-[#58a6ff] mb-3 break-all text-xs md:text-sm">https://code.visualstudio.com/</a>
-                <p class="text-sm mb-2 mt-2 leading-[1.4] text-gray-400 mb-2 leading-[1.4] md:mb-3">Code editing. Redefined.</p>
+                <p class="text-sm mb-2 mt-2 leading-[1.4] text-gray-400 md:mb-3">Code editing. Redefined.</p>
                 <div class="tags mt-2 flex flex-wrap gap-2">
                     <span class="text-[10px] md:text-xs tag">Development</span>
                     <span class="text-[10px] md:text-xs tag">Tools</span>
