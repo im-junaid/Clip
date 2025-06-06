@@ -1,0 +1,581 @@
+{% extends 'home/base.html' %}
+{% load static %}
+{% load static json_extras %}
+
+{% block title %} Clip - Dashboard {% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<main class="p-5 md:pt-12">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold">Clip</h2>
+        <button id="add-openBtn" class="btn-primary text-sm text-white p-2 rounded-xl">
+            + Add Bookmark</button>
+    </div>
+
+    <!-- Bookmark Filter Component -->
+    <div class="bg-[#131D35] p-3 pb-0 rounded-xl w-full max-w-2xl mx-auto border-custom-card md:p-4 xl:p-5">
+        <!-- Title -->
+        <div class="flex items-center text-xs text-gray-400 font-medium mb-3 md:text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707l-6.414 6.414A2 2 0 0013 14.586V19a1 1 0 01-1.447.894l-2-1A1 1 0 019 18v-3.414a2 2 0 00-.293-1.293L2.293 6.707A1 1 0 012 6V4z" />
+            </svg>
+            Filters
+        </div>
+
+        <!-- Search Input -->
+        <div class="mb-3">
+            <div class="relative border-custom-card">
+                <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 md:left-3">
+                    <svg class="h-4 w-4 md:h-5 md:w-5" width="24" height="24" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                    </svg>
+                </span>
+                <input id="searchInput" type="text" placeholder="Search bookmarks by name, description, tags..."
+                    class="w-full pl-7 pr-3 py-2 text-xs text-gray-200 bg-theme border-custom-card  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition disabled:cursor-not-allowed disabled:opacity-50 md:text-sm md:pl-10" />
+            </div>
+        </div>
+
+        <!-- Filter Categories -->
+        <div class="mb-3">
+            <div id="categoryGroup" class="flex flex-wrap justify-center gap-1 md:gap-2 xl:gap-3">
+                <button
+                    class="border-custom-card category-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-category="web">
+                    Web
+                </button>
+                <button
+                    class="border-custom-card category-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-category="desktop">
+                    Desktop
+                </button>
+                <button
+                    class="border-custom-card category-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-category="mobile">
+                    Mobile
+                </button>
+                <button
+                    class="border-custom-card category-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-category="script">
+                    Script
+                </button>
+                <button
+                    class="border-custom-card category-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-category="bot">
+                    Bot
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Tags -->
+        <div class="mb-3">
+            <div id="tagGroup" class="flex flex-wrap justify-center gap-2 xl:gap-3">
+                <button
+                    class="border-custom-card tag-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-tag="ai">
+                    AI
+                </button>
+                <button
+                    class="border-custom-card tag-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-tag="hacking">
+                    Hacking
+                </button>
+                <button
+                    class="border-custom-card tag-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-tag="development">
+                    Development
+                </button>
+                <button
+                    class="border-custom-card tag-btn px-3 py-1 text-gray-200 text-[10px] font-semibold hover:text-white transition md:text-xs md:px-3 md:py-1"
+                    data-tag="design">
+                    Design
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Summary & Clear -->
+        <div class="flex items-center mb-2">
+            <span id="filterSummary" class="text-xs text-gray-400 md:text-sm"></span>
+            <button id="clearFilterBtn"
+                class="hidden ml-auto text-xs text-gray-400 hover:text-white px-2 py-1 rounded xl:text-sm">
+                Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- Bookmark search list -->
+    <section id="searchResults" class="transition-all duration-1000 ease-in-out opacity-0 max-h-0">
+        <h2 class="text-white font-bold text-base mt-8 md:text-lg">🔍 Search Results</h2>
+        <div id="searchResultsDiv"
+            class="grid grid-cols-1 gap-4 mt-3 transition-all duration-600 ease-in-out opacity-0 max-h-0 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
+        </div>
+
+        <div id="noResults"
+            class="flex justify-center items-center mt-6 text-gray-400 transition-opacity duration-600 ease-in-out opacity-0">
+            No bookmarks found!
+        </div>
+    </section>
+
+
+    <!-- Bookmark deafult list -->
+    <section id="defaultCards" class="relative">
+        <h2 class="text-white font-bold text-base mt-8 md:text-lg">📂 Your Bookmark Library</h2>
+        <div id="cards" class="grid grid-cols-1 gap-4 mt-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
+
+            {% for bm in bookmarks %}
+
+                <div class="card p-4 md:p-6 relative cursor-pointer" data-bm-id="{{ bm.id }}"
+                    data-platform="{{ bm.platform }}" data-tags='{{ bm.tags|to_json }}'>
+
+                    <h3 class="mb-2 font-semibold text-lg md:text-xl truncate">{{ bm.name }}</h3>
+
+                    {% if bm.url %}
+                    <a href="{{ bm.url }}" target="_blank"
+                        class="url inline-block text-[#58a6ff] mb-3 text-xs truncate whitespace-nowrap max-w-[200px] md:text-sm hover:underline">{{ bm.url }}</a>
+                    {% endif %}
+                    <p class="text-xs mb-2 mt-2 leading-[1.4] text-gray-400  truncate line-clamp-2 md:mb-3">{{ bm.description }}</p>
+
+                    <!-- <div class="tags mt-3 flex flex-wrap gap-1 md:gap-2"> -->
+                    <div class="tags mt-3 flex flex-wrap gap-1 md:gap-2 max-h-[1.5rem] md:max-h-[2rem] overflow-hidden">
+                        <span class="text-[10px] md:text-xs tag">{{ bm.platform }}</span>
+
+                        {% with bm.tags|length as total_tags %}
+                        {% for tag in bm.tags|slice:":3" %}
+                            <span class="text-[10px] md:text-xs tag">{{ tag }}</span>
+                        {% endfor %}
+
+                        {% if total_tags > 3 %}
+                        <span class="text-[10px] md:text-xs tag">
+                            +{{ total_tags|add:"-3" }}
+                        </span>
+                        {% endif %}
+                        {% endwith %}
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- No bookmark found -->
+        <div id="no-bookmarks" class="hidden col-span-full flex flex-col items-center justify-center mt-10 text-center">
+            <div class="bg-[#232B3A] rounded-full p-5 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[var(--btn-hover)]" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                </svg>
+            </div>
+            <h2 class="text-white font-bold text-lg mb-1">No bookmarks found</h2>
+            <p class="text-gray-400 mb-4 text-sm">You don't have any bookmarks yet. Start adding your favorite
+                websites and applications.</p>
+        </div>
+    </section>
+
+    <!-- View Bookmark Modal -->
+    <div id="view-modal"
+    class="fixed z-50 flex justify-center items-center p-8 inset-0 bg-black/60 backdrop-blur transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div id="view-card"
+            class="relative flex flex-col w-full max-w-lg max-h-[calc(100vh-4rem)] border-custom-card bg-theme rounded-lg p-5 m-2 max-h-[80vh] overflow-y-auto space-y-4 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:py-8 md:w-full">
+            <div class="absolute top-1.5 right-2 flex space-x-2 md:top-2 md:right-2.5">
+                <!-- Edit button -->
+                <button id="view-editBtn" type="button" aria-label="Edit"
+                    class="inline-flex items-center justify-center h-8 px-2 text-xs font-medium text-gray-500 transition-colors bg-transparent rounded-xl hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-blue-400 disabled:opacity-50 disabled:pointer-events-none"
+                    data-action="edit" data-id="{{ bm.id }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 md:w-5 md:h-5" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        viewBox="0 0 24 24">
+                        <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+                    </svg>
+                </button>
+
+                <!-- Delete button -->
+                <button id="view-deleteBtn" type="button" aria-label="Delete"
+                    class="inline-flex items-center justify-center h-8 px-2 text-xs font-medium text-gray-500 transition-colors bg-transparent rounded-xl hover:bg-gray-100 hover:text-red-600 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-red-400 disabled:opacity-50 disabled:pointer-events-none"
+                    data-action="delete" data-id="{{ bm.id }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 md:w-5 md:h-5" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        viewBox="0 0 24 24">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
+
+                <!-- close button -->
+                <button type="button" id="view-closeBtn"
+                    class="inline-flex items-center justify-center h-8 px-2 text-xs font-medium text-gray-500 transition-colors bg-transparent rounded-xl hover:bg-gray-100 hover:text-white dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-white disabled:opacity-50 disabled:pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:w-5 md:h-5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                    </svg>
+                    <span class="sr-only">Close</span>
+                </button>
+            </div>
+
+            <h3 id="view-name" class="font-semibold text-lg mb-2 whitespace-normal break-words md:text-2xl"></h3>
+            <a id="view-url" href="#" target="_blank"
+                class="url inline-block text-[#58a6ff] text-xs mb-4 whitespace-normal break-words md:text-sm hover:underline"></a>
+            <p id="view-description"
+                class="text-xs mb-2 mt-2 leading-[1.4] text-gray-400 whitespace-normal break-words md:mb-3"></p>
+            <div id="view-tags" class="tags mt-3 flex flex-wrap gap-1 md:gap-2"></div>
+        </div>
+    </div>
+
+    <!-- Add Bookmark Modal -->
+    <div id="add-modal"
+        class="fixed z-50 flex justify-center items-center p-8 inset-0 bg-black/60 backdrop-blur transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div id="add-modal-content"
+            class="relative border-custom-card w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-y-auto bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
+            <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+                <h2 class="text-sm font-semibold leading-none tracking-tight md:text-lg">Add New Bookmark</h2>
+                <p class="text-xs text-gray-400 md:text-sm">Add a new bookmark to your collection.</p>
+            </div>
+            <button type="button" id="add-closeBtn"
+                class="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-offset-purple-700 disabled:pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+
+            <div class="grid gap-4 pt-4">
+                <!-- Name Input -->
+                <div class="grid gap-2">
+                    <label for="add-name" class="text-xs font-medium leading-none flex items-center md:text-sm">
+                        Name <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <input id="add-name" type="text" required
+                        class="flex border-custom-card h-10 w-full text-xs bg-theme px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500 transition disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        placeholder="Bookmark name">
+                </div>
+
+                <!-- URL Input -->
+                <div class="grid gap-2">
+                    <label for="add-url" class="text-xs font-medium leading-none flex items-center md:text-sm">
+                        URL <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <input id="add-url" type="text" placeholder="https://example.com" required
+                        class="flex border-custom-card h-10 w-full text-xs bg-theme px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500 transition disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                </div>
+
+                <!-- Description Input -->
+                <div class="grid gap-2">
+                    <label for="add-description" class="text-xs font-medium leading-none md:text-sm">
+                        Description <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <textarea id="add-description" placeholder="Add a brief description..." required
+                        class="flex border-custom-card min-h-[80px] w-full resize-none px-3 py-2 text-xs bg-theme placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"></textarea>
+                </div>
+
+                <!-- Category Select -->
+                <div class="grid gap-2">
+                    <label for="add-dropdownBtn" class="text-xs font-medium leading-none md:text-sm">
+                        Platform <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <div class="relative w-full">
+                        <button id="add-dropdownBtn" type="button"
+                            class="flex border-custom-card h-10 w-full items-center text-xs bg-theme justify-between rounded-xl hover:bg-purple-600 px-3 py-2  shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 md:text-sm">
+                            <div class="flex items-center">
+                                <svg id="add-selectedIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path
+                                        d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                    </path>
+                                </svg>
+                                <span id="add-selectedText">Web</span>
+                            </div>
+                            <svg class="h-4 w-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="m6 9 6 6 6-6"></path>
+                            </svg>
+                        </button>
+
+                        <div id="add-dropdownMenu"
+                            class="hidden absolute z-50 mt-2 w-full max-h-48  bottom-full mb-2 overflow-y-auto rounded-xl bg-theme border-custom-card shadow-lg">
+                            <div data-option="Web"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path
+                                        d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                    </path>
+                                </svg>
+                                Web
+                            </div>
+                            <div data-option="Desktop"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <rect x="3" y="3" width="18" height="14" rx="2" ry="2" />
+                                    <path d="M8 21h8M12 17v4"></path>
+                                </svg>
+                                Desktop
+                            </div>
+                            <div data-option="Mobile"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+                                    <path d="M12 18h.01"></path>
+                                </svg>
+                                Mobile
+                            </div>
+                            <div data-option="Bot"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <rect x="4" y="6" width="16" height="12" rx="2" ry="2" />
+                                    <circle cx="8" cy="10" r="1" />
+                                    <circle cx="16" cy="10" r="1" />
+                                    <path d="M8 15h8"></path>
+                                </svg>
+                                Bot
+                            </div>
+                            <div data-option="Script"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                                Script
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tag selection -->
+                <div class="grid gap-2">
+                    <label for="add-search" class="text-xs font-medium leading-none md:text-sm">
+                        Tags <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <div class="relative w-full">
+                        <div class="tag-selector relative">
+                            <!-- selected tags container -->
+                            <div id="add-tagGroup"
+                                class="hidden selected-tags flex flex-wrap my-1 bg-theme border-custom-card md:p-2">
+                            </div>
+                            <!-- search + done -->
+                            <div class="search-container flex mt-2">
+                                <input id="add-search" type="text"
+                                    class="search-bar flex-grow mr-3 px-3 py-2 text-white h-10 text-xs border-custom-card bg-theme placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                    placeholder="Select or create tags">
+                                <button id="add-done"
+                                    class="done-button h-10 border-custom-card whitespace-nowrap text-xs font-medium text-white px-5 ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-theme hover:bg-accent hover:text-accent-foreground md:text-sm">
+                                    Done
+                                </button>
+                            </div>
+                            <!-- dropdown list -->
+                            <ul id="add-tagList"
+                                class="hidden tags-list absolute w-full mb-1 text-xs bg-theme border-custom-card max-h-40 bottom-full overflow-y-auto md:text-sm">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:space-x-2">
+                    <button id="add-cancelBtn"
+                        class="inline-flex items-center justify-center text-xs font-medium  gap-2 h-10 px-4 py-2 border-custom-card  whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-theme hover:bg-accent hover:text-accent-foreground md:text-sm">
+                        Cancel
+                    </button>
+                    <button id="add-submit"
+                        class="inline-flex btn-primary justify-center items-center text-xs font-medium gap-2 h-10 px-4 py-2 whitespace-nowrap  ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground md:text-sm">
+                        Add Bookmark
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Bookmark Modal -->
+    <div id="edit-modal"
+    class="fixed z-50 flex justify-center items-center p-8 inset-0 bg-black/60 backdrop-blur transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div id="edit-modal-content"
+        class="relative border-custom-card w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-y-auto bg-theme rounded-lg p-5 m-2 shadow-lg opacity-0 scale-95 transition-all duration-300 transform md:px-6 md:p-6 md:w-full">
+            <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+                <h2 class="text-sm font-semibold leading-none tracking-tight md:text-lg">Edit Bookmark</h2>
+                <p class="text-xs text-gray-400 md:text-sm">Update your bookmark details.</p>
+            </div>
+
+            <button type="button" id="edit-closeBtn"
+                class="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-offset-purple-700 disabled:pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+                <span class="sr-only">Close</span>
+            </button>
+
+            <div class="grid gap-4 pt-4">
+                <!-- Name Input -->
+                <div class="grid gap-2">
+                    <label for="edit-name" class="text-xs font-medium leading-none flex items-center md:text-sm">
+                        Name <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <input id="edit-name" type="text" required
+                        class="flex border-custom-card h-10 w-full text-xs bg-theme px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500 transition disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                        placeholder="Bookmark name">
+                </div>
+
+                <!-- URL Input -->
+                <div class="grid gap-2">
+                    <label for="edit-url" class="text-xs font-medium leading-none flex items-center md:text-sm">
+                        URL <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <input id="edit-url" type="text" placeholder="https://example.com" required
+                        class="flex border-custom-card h-10 w-full text-xs bg-theme px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500 transition disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                </div>
+
+                <!-- Description Input -->
+                <div class="grid gap-2">
+                    <label for="edit-description" class="text-xs font-medium leading-none md:text-sm">
+                        Description <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <textarea id="edit-description" placeholder="Add a brief description..." required
+                        class="flex border-custom-card min-h-[80px] w-full resize-none px-3 py-2 text-xs bg-theme placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"></textarea>
+                </div>
+
+                <!-- Platform Select -->
+                <div class="grid gap-2">
+                    <label for="edit-dropdownBtn" class="text-xs font-medium leading-none md:text-sm">
+                        Platform <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <div class="relative w-full">
+                        <button id="edit-dropdownBtn" type="button"
+                            class="flex border-custom-card h-10 w-full items-center text-xs bg-theme justify-between rounded-xl hover:bg-purple-600 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 md:text-sm">
+                            <div class="flex items-center">
+                                <svg id="edit-selectedIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path
+                                        d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                    </path>
+                                </svg>
+                                <span id="edit-selectedText">Web</span>
+                            </div>
+                            <svg class="h-4 w-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="m6 9 6 6 6-6"></path>
+                            </svg>
+                        </button>
+
+                        <div id="edit-dropdownMenu"
+                            class="hidden absolute z-50 mt-2 w-full max-h-48 bottom-full mb-2 overflow-y-auto rounded-xl bg-theme border-custom-card shadow-lg">
+                            <div data-option="Web"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path
+                                        d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                    </path>
+                                </svg>
+                                Web
+                            </div>
+                            <div data-option="Desktop"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <rect x="3" y="3" width="18" height="14" rx="2" ry="2"></rect>
+                                    <path d="M8 21h8M12 17v4"></path>
+                                </svg>
+                                Desktop
+                            </div>
+                            <div data-option="Mobile"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
+                                    <path d="M12 18h.01"></path>
+                                </svg>
+                                Mobile
+                            </div>
+                            <div data-option="Bot"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <rect x="4" y="6" width="16" height="12" rx="2" ry="2"></rect>
+                                    <circle cx="8" cy="10" r="1"></circle>
+                                    <circle cx="16" cy="10" r="1"></circle>
+                                    <path d="M8 15h8"></path>
+                                </svg>
+                                Bot
+                            </div>
+                            <div data-option="Script"
+                                class="optionItem flex items-center text-xs px-4 py-2 hover:bg-purple-600 cursor-pointer md:text-sm">
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                                Script
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tag Selection -->
+                <div class="grid gap-2">
+                    <label for="edit-search" class="text-xs font-medium leading-none md:text-sm">
+                        Tags <span class="text-destructive text-red-700 ml-1">*</span>
+                    </label>
+                    <div class="relative w-full">
+                        <div class="tag-selector relative">
+                            <!-- Selected Tags Container -->
+                            <div id="edit-tagGroup"
+                                class="hidden selected-tags flex flex-wrap my-1 bg-theme border-custom-card md:p-2">
+                            </div>
+                            <!-- Search + Done -->
+                            <div class="search-container flex mt-2">
+                                <input id="edit-search" type="text"
+                                    class="search-bar flex-grow mr-3 px-3 py-2 text-white h-10 text-xs border-custom-card bg-theme placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                    placeholder="Select or create tags">
+                                <button id="edit-done"
+                                    class="done-button h-10 border-custom-card whitespace-nowrap text-xs font-medium text-white px-5 ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-theme hover:bg-accent hover:text-accent-foreground md:text-sm">
+                                    Done
+                                </button>
+                            </div>
+                            <!-- Dropdown List -->
+                            <ul id="edit-tagList"
+                                class="hidden tags-list absolute w-full mb-1 text-xs bg-theme border-custom-card max-h-40 bottom-full overflow-y-auto md:text-sm">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:space-x-2">
+                    <button id="edit-cancelBtn"
+                        class="inline-flex justify-center items-center text-xs font-medium gap-2 h-10 px-4 py-2 border-custom-card whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-theme hover:bg-accent hover:text-accent-foreground md:text-sm">
+                        Cancel
+                    </button>
+                    <button id="edit-submit"
+                        class="inline-flex justify-center items-center btn-primary text-xs font-medium gap-2 h-10 px-4 py-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground md:text-sm">
+                        Update Bookmark
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% block extra_js %}
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    {% endblock %}
+
+</main>
+
+{% endblock %}

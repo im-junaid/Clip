@@ -1,0 +1,135 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Clip - Signin {% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<main class="flex w-full p-12 justify-center items-center h-[90dvh]">
+    <div class="max-w-md w-full mx-auto">
+        <h1 class="text-xl font-bold mb-1 md:text-2xl md:mb-2">Welcome back</h1>
+        <p class="text-xs text-gray-500 mb-4 md:text-sm md:mb-6">Enter your credentials to sign in</p>
+
+        <form id="signin-form" method="post" novalidate class="space-y-4">
+            {% csrf_token %}
+
+            <!-- next url Field -->
+            {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+
+            <!-- Username Field -->
+            <div>
+                <label for="username" class="block text-sm font-medium mb-1">Username</label>
+                <input id="username" type="text" placeholder="username" required name="username"
+                    class="w-full px-4 py-2 text-sm border border-gray-700 rounded-lg bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition md:text-base" />
+                <p id="name-error" class="mt-1 text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Password Field -->
+            <div class="relative">
+                <label for="password" class="block text-sm font-medium mb-1">Password</label>
+                <input id="password" type="password" placeholder="••••••••" name="password" required minlength="8"
+                    class="w-full px-4 py-2 text-sm border border-gray-700 rounded-lg bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition md:text-base pr-10" />
+                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center pt-6 text-gray-400">
+                    <!-- Eye Slash Icon (initially visible) -->
+                    <svg id="eye-slash-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -64 640 640" width="24" height="24" fill="currentColor" class="h-5 w-5">
+                        <path d="M634 471L36 3.51A16 16 0 0 0 13.51 6l-10 12.49A16 16 0 0 0 6 41l598 467.49a16 16 0 0 0 22.49-2.49l10-12.49A16 16 0 0 0 634 471z M296.79 146.47l134.79 105.38C429.36 191.91 380.48 144 320 144a112.26 112.26 0 0 0-23.21 2.47z m46.42 219.07L208.42 260.16C210.65 320.09 259.53 368 320 368a113 113 0 0 0 23.21-2.46z M320 112c98.65 0 189.09 55 237.93 144a285.53 285.53 0 0 1-44 60.2l37.74 29.5a333.7 333.7 0 0 0 52.9-75.11 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64c-36.7 0-71.71 7-104.63 18.81l46.41 36.29c18.94-4.3 38.34-7.1 58.22-7.1z m0 288c-98.65 0-189.08-55-237.93-144a285.47 285.47 0 0 1 44.05-60.19l-37.74-29.5a333.6 333.6 0 0 0-52.89 75.1 32.35 32.35 0 0 0 0 29.19C89.72 376.41 197.08 448 320 448c36.7 0 71.71-7.05 104.63-18.81l-46.41-36.28C359.28 397.2 339.89 400 320 400z"/>
+                    </svg>
+                    <!-- Eye Icon (initially hidden) -->
+                    <svg id="eye-open-icon" class="h-5 w-5 hidden" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+                <p id="password-error" class="mt-1 text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                class="w-full py-3 btn-primary text-sm text-white rounded-lg font-medium transition md:text-base">
+                Sign In
+            </button>
+        </form>
+        <p class="mt-4 text-center text-xs text-gray-500 md:text-sm">
+            <a href="{% url 'accounts:password_reset' %}" class="text-gray-500 hover:underline hover:text-[#7c43ef]">
+                Forgot password?
+            </a>
+        </p>
+
+        <p class="mt-3 text-center text-xs text-gray-500 md:text-sm">
+            Don’t have an account?
+            <a href="{% url 'accounts:signup' %}" class="text-gray-500 hover:underline hover:text-[#7c43ef]">Sign
+                up</a>
+        </p>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('signin-form');
+        const nameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+
+        const nameErr = document.getElementById('name-error');
+        const passErr = document.getElementById('password-error');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            // Toggle eye icon visibility
+            const eyeSlashIcon = document.getElementById('eye-slash-icon');
+            const eyeOpenIcon = document.getElementById('eye-open-icon');
+
+            if (type === 'password') {
+                eyeSlashIcon.classList.remove('hidden');
+                eyeOpenIcon.classList.add('hidden');
+            } else {
+                eyeSlashIcon.classList.add('hidden');
+                eyeOpenIcon.classList.remove('hidden');
+            }
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let valid = true;
+
+            // clear old errors
+            [nameErr, passErr].forEach(el => el.textContent = '');
+
+            // 1) Username: start with letter, max 15 chars, alphanumeric only, no spaces
+            const nameVal = nameInput.value.trim();
+            if (/\s/.test(nameVal)) {
+                nameErr.textContent = 'Username cannot contain spaces.';
+                valid = false;
+            } else if (!/^[A-Za-z][A-Za-z0-9]{0,14}$/.test(nameVal)) {
+                nameErr.textContent = 'Must start with a letter, 4 - 15 chars, letters & numbers only.';
+                valid = false;
+            }
+
+            // 2) Password: required & min length 8
+            const pwdVal = passwordInput.value;
+            if (!pwdVal) {
+                passErr.textContent = 'Password is required.';
+                valid = false;
+            }
+            // else if (pwdVal.length < 1) {
+            //     passErr.textContent = 'Password must be at least 8 characters.';
+            //     valid = false;
+            // }
+
+            if (valid) {
+                // all good—submit the form or redirect
+                form.submit();
+            }
+        });
+    });
+</script>
+
+{% endblock %}

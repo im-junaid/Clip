@@ -1,0 +1,22 @@
+
+npm install tailwindcss@3 postcss autoprefixer 
+
+npx tailwindcss init
+
+tailwind.config.js
+```
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './**/templates/**/*.html',
+    './**/static/**/*.js',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+```
+
+npx tailwindcss -i ./bookmark/static/css/src/input.css -o ./bookmark/static/css/tailwind.css --minify

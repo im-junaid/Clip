@@ -1,0 +1,279 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Clip - Signup {% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<main class="flex w-full p-12 justify-center items-center h-[90dvh]">
+    <div class="max-w-md w-full mx-auto">
+        <h1 class="text-xl font-bold mb-1 md:text-2xl md:mb-2">Create an account</h1>
+        <p class="text-xs text-gray-500 mb-4 md:text-sm md:mb-6">Enter your details to get started</p>
+
+        <form id="signup-form" method="post" novalidate class="space-y-4">
+            {% csrf_token %}
+            <!-- userame Field -->
+            <div>
+                <label for="username" class="block text-sm font-medium mb-1">Username</label>
+                <input id="username" type="text" placeholder="username" required name="username"
+                    class="w-full px-4 py-2 text-sm border border-gray-700 rounded-lg bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition md:text-base" />
+                <p id="name-error" class="mt-1 text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block text-sm font-medium mb-1">Email</label>
+                <input id="email" type="email" placeholder="email@example.com" required name="email"
+                    class="w-full px-4 py-2 text-sm border border-gray-700 rounded-lg bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition md:text-base" />
+                <p id="email-error" class="mt-1 text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+                <label for="password" class="block text-sm font-medium mb-1">Password</label>
+                <div class="relative">
+                    <input id="password" type="password" placeholder="Password" name="reg_password" required
+                        minlength="8"
+                        class="w-full px-4 py-2 text-sm border border-gray-700 rounded-lg bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition md:text-base pr-10" />
+                    <button type="button" id="togglePassword"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400">
+                        <!-- Eye Slash Icon (initially visible) -->
+                        <svg id="eye-slash-icon-password" xmlns="http://www.w3.org/2000/svg" viewBox="0 -64 640 640"
+                            width="24" height="24" fill="currentColor" class="h-5 w-5">
+                            <path
+                                d="M634 471L36 3.51A16 16 0 0 0 13.51 6l-10 12.49A16 16 0 0 0 6 41l598 467.49a16 16 0 0 0 22.49-2.49l10-12.49A16 16 0 0 0 634 471z M296.79 146.47l134.79 105.38C429.36 191.91 380.48 144 320 144a112.26 112.26 0 0 0-23.21 2.47z m46.42 219.07L208.42 260.16C210.65 320.09 259.53 368 320 368a113 113 0 0 0 23.21-2.46z M320 112c98.65 0 189.09 55 237.93 144a285.53 285.53 0 0 1-44 60.2l37.74 29.5a333.7 333.7 0 0 0 52.9-75.11 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64c-36.7 0-71.71 7-104.63 18.81l46.41 36.29c18.94-4.3 38.34-7.1 58.22-7.1z m0 288c-98.65 0-189.08-55-237.93-144a285.47 285.47 0 0 1 44.05-60.19l-37.74-29.5a333.6 333.6 0 0 0-52.89 75.1 32.35 32.35 0 0 0 0 29.19C89.72 376.41 197.08 448 320 448c36.7 0 71.71-7.05 104.63-18.81l-46.41-36.28C359.28 397.2 339.89 400 320 400z" />
+                        </svg>
+                        <!-- Eye Icon (initially hidden) -->
+                        <svg id="eye-open-icon-password" class="h-5 w-5 hidden" width="24" height="24" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+                <p id="password-error" class="mt-1 text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div>
+                <label for="confirm-password" class="block text-sm font-medium mb-1">Confirm Password</label>
+                <div class="relative">
+                    <input id="confirm-password" type="password" placeholder="Confirm password" name="confirm_password"
+                        required minlength="8"
+                        class="w-full px-4 py-2 text-sm border border-gray-700 rounded-lg bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition md:text-base pr-10" />
+                    <button type="button" id="toggleConfirmPassword"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400">
+                        <!-- Eye Slash Icon (initially visible) -->
+                        <svg id="eye-slash-icon-confirm" xmlns="http://www.w3.org/2000/svg" viewBox="0 -64 640 640"
+                            width="24" height="24" fill="currentColor" class="h-5 w-5">
+                            <path
+                                d="M634 471L36 3.51A16 16 0 0 0 13.51 6l-10 12.49A16 16 0 0 0 6 41l598 467.49a16 16 0 0 0 22.49-2.49l10-12.49A16 16 0 0 0 634 471z M296.79 146.47l134.79 105.38C429.36 191.91 380.48 144 320 144a112.26 112.26 0 0 0-23.21 2.47z m46.42 219.07L208.42 260.16C210.65 320.09 259.53 368 320 368a113 113 0 0 0 23.21-2.46z M320 112c98.65 0 189.09 55 237.93 144a285.53 285.53 0 0 1-44 60.2l37.74 29.5a333.7 333.7 0 0 0 52.9-75.11 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64c-36.7 0-71.71 7-104.63 18.81l46.41 36.29c18.94-4.3 38.34-7.1 58.22-7.1z m0 288c-98.65 0-189.08-55-237.93-144a285.47 285.47 0 0 1 44.05-60.19l-37.74-29.5a333.6 333.6 0 0 0-52.89 75.1 32.35 32.35 0 0 0 0 29.19C89.72 376.41 197.08 448 320 448c36.7 0 71.71-7.05 104.63-18.81l-46.41-36.28C359.28 397.2 339.89 400 320 400z" />
+                        </svg>
+                        <!-- Eye Icon (initially hidden) -->
+                        <svg id="eye-open-icon-confirm" class="h-5 w-5 hidden" width="24" height="24" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+                <p id="confirm-error" class="mt-1 text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                class="w-full py-3 btn-primary text-sm text-white rounded-lg font-medium btn-primary transition  md:text-base">
+                Create Account
+            </button>
+        </form>
+
+        <p class="mt-4 text-center text-xs text-gray-500 md:text-sm md:mt-6">
+            Already have an account?
+            <a href="{% url 'accounts:signin' %}" class="text-gray-500 hover:text-[#7c43ef]">Sign in</a>
+        </p>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('signup-form');
+        const nameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirm-password');
+        const togglePassword = document.getElementById('togglePassword');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+
+        const nameErr = document.getElementById('name-error');
+        const emailErr = document.getElementById('email-error');
+        const passErr = document.getElementById('password-error');
+        const confirmErr = document.getElementById('confirm-error');
+
+        const toggleVisibility = (inputElement, eyeSlashIconId, eyeOpenIconId) => {
+            const type = inputElement.getAttribute('type') === 'password' ? 'text' : 'password';
+            inputElement.setAttribute('type', type);
+            const eyeSlashIcon = document.getElementById(eyeSlashIconId);
+            const eyeOpenIcon = document.getElementById(eyeOpenIconId);
+
+            if (type === 'password') {
+                eyeSlashIcon.classList.remove('hidden');
+                eyeOpenIcon.classList.add('hidden');
+            } else {
+                eyeSlashIcon.classList.add('hidden');
+                eyeOpenIcon.classList.remove('hidden');
+            }
+        };
+
+        togglePassword.addEventListener('click', () => {
+            toggleVisibility(passwordInput, 'eye-slash-icon-password', 'eye-open-icon-password');
+        });
+
+        toggleConfirmPassword.addEventListener('click', () => {
+            toggleVisibility(confirmInput, 'eye-slash-icon-confirm', 'eye-open-icon-confirm');
+        });
+
+
+        // Clear all errors initially
+        [nameErr, emailErr, passErr, confirmErr].forEach(el => el.textContent = '');
+
+        // 1) Validate Username
+        function validateUsername() {
+            const nameVal = nameInput.value.trim();
+            nameErr.textContent = '';
+            if (/\s/.test(nameVal)) {
+                nameErr.textContent = 'Username cannot contain spaces.';
+                return false;
+            }
+            if (!/^[A-Za-z][A-Za-z0-9]{3,14}$/.test(nameVal)) {
+                nameErr.textContent = 'Must start with a letter; 4 - 15 chars; letters & numbers only.';
+                return false;
+            }
+            return true;
+        }
+
+        // 2) Validate Email
+        function validateEmail() {
+            const emailVal = emailInput.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
+            emailErr.textContent = '';
+            if (!emailVal) {
+                emailErr.textContent = 'Email is required.';
+                return false;
+            }
+            if (!emailRegex.test(emailVal)) {
+                emailErr.textContent = 'Invalid email (e.g. user@example.com).';
+                return false;
+            }
+            return true;
+        }
+
+        // 3) Validate Password
+        function validatePassword() {
+            const pwd = passwordInput.value;
+            const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+            passErr.textContent = '';
+            if (!pwd) {
+                passErr.textContent = 'Password is required.';
+                return false;
+            }
+            if (!pwdRegex.test(pwd)) {
+                passErr.textContent = 'Min 8 chars with uppercase, lowercase, number & symbol.';
+                return false;
+            }
+            return true;
+        }
+
+        // 4) Confirm Password
+        function validateConfirmPassword() {
+            confirmErr.textContent = '';
+            if (confirmInput.value !== passwordInput.value) {
+                confirmErr.textContent = 'Passwords do not match.';
+                return false;
+            }
+            return true;
+        }
+
+        nameInput.addEventListener('input', validateUsername);
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', () => {
+            validatePassword();
+            validateConfirmPassword(); // also update confirm match if needed
+        });
+        confirmInput.addEventListener('input', validateConfirmPassword);
+
+        form.addEventListener('submit', e => {
+            const isValid = validateUsername() &&
+                validateEmail() &&
+                validatePassword() &&
+                validateConfirmPassword();
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+
+        // form.addEventListener('submit', (e) => {
+        //     e.preventDefault();
+        //     let valid = true;
+
+        // // clear old errors
+        // [nameErr, emailErr, passErr, confirmErr].forEach(el => el.textContent = '');
+
+        // // 1) Username: start with letter, ≤15 chars, alphanumeric, no spaces
+        // const nameVal = nameInput.value.trim();
+        // if (/\s/.test(nameVal)) {
+        //     nameErr.textContent = 'Username cannot contain spaces.';
+        //     valid = false;
+        // } else if (!/^[A-Za-z][A-Za-z0-9]{0,14}$/.test(nameVal)) {
+        //     nameErr.textContent = 'Must start with a letter; 4 - 15 chars; letters & numbers only.';
+        //     valid = false;
+        // }
+
+        // // 2) Email: basic format check
+        // const emailVal = emailInput.value.trim();
+        // const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
+        // if (!emailVal) {
+        //     emailErr.textContent = 'Email is required.';
+        //     valid = false;
+        // } else if (!emailRegex.test(emailVal)) {
+        //     emailErr.textContent = 'Invalid email (e.g. user@example.com).';
+        //     valid = false;
+        // }
+
+        // // 3) Password: min 8 chars, uppercase, lowercase, digit, symbol
+        // const pwd = passwordInput.value;
+        // const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        // if (!pwd) {
+        //     passErr.textContent = 'Password is required.';
+        //     valid = false;
+        // } else if (!pwdRegex.test(pwd)) {
+        //     passErr.textContent = 'Min 8 chars with uppercase, lowercase, number & symbol.';
+        //     valid = false;
+        // }
+
+        // // 4) Confirm password
+        // if (confirmInput.value !== pwd) {
+        //     confirmErr.textContent = 'Passwords do not match.';
+        //     valid = false;
+        // }
+
+        //     if (valid) {
+        //         // all good! submit the form to the server
+        //         form.submit();
+        //     }
+        // });
+    });
+</script>
+
+
+{% endblock %}
