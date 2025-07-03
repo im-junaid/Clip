@@ -1,9 +1,12 @@
 
 .vscode/
 node_modules/
-
-# build files
 tailwind.config.js
+tailwindcss-build.txt
+package.json
+package-lock.json
+db.sqlite3
+
 
 ### Django ###
 *.log
