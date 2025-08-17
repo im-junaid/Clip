@@ -18,17 +18,19 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load .env file
-load_dotenv(BASE_DIR / '.env-dev')
+load_dotenv(BASE_DIR / ".env-dev")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-%23duqk)af1cd^5!j8x9al73=&*2$5z4g-_g9^r6)e$zf+zptp")
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-%23duqk)af1cd^5!j8x9al73=&*2$5z4g-_g9^r6)e$zf+zptp"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
@@ -57,9 +59,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "clip.urls"
-LOGIN_URL = 'accounts:signin'
-LOGIN_REDIRECT_URL = '/' 
-LOGOUT_REDIRECT_URL = '/' 
+LOGIN_URL = "accounts:signin"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 TEMPLATES = [
     {
@@ -93,17 +95,21 @@ WSGI_APPLICATION = "clip.wsgi.application"
 
 # for postgresql
 DATABASES = {
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": os.getenv("DB_NAME"),
+    #     "USER": os.getenv("DB_USER"),
+    #     "PASSWORD": os.getenv("DB_PASSWORD"),
+    #     "HOST": os.getenv("DB_HOST"),
+    #     # Cast DB_PORT to int; if missing, default to 5432
+    #     "PORT": int(os.getenv("DB_PORT", "5432")),
+    # }
+    
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        # Cast DB_PORT to int; if missing, default to 5432
-        "PORT": int(os.getenv("DB_PORT", "5432")),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
 
 
 # Password validation
@@ -147,8 +153,8 @@ USE_I18N = True
 USE_TZ = True
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -157,4 +163,4 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 # DEFAULT_FROM_EMAIL  = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = f"Clip Support <{EMAIL_HOST_USER}>"
-PASSWORD_RESET_EMAIL_HTML = 'emails/password_reset_email.html'
+PASSWORD_RESET_EMAIL_HTML = "emails/password_reset_email.html"

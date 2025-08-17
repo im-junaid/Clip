@@ -111,7 +111,6 @@ def delete_bookmark(request, bookmark_id):
 
     try:
         bookmark.delete()
-        # print("\n\nbookmark deleted")
         return JsonResponse({"success": True})
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
@@ -123,7 +122,7 @@ def search_bookmark(request):
     category= request.GET.get('category', '').strip()
     tags    = request.GET.getlist('tags[]')  # expecting multiple tags
 
-    qs = Bookmark.objects.all()
+    qs = Bookmark.objects.filter(user=request.user)
 
     if q:
         qs = qs.filter(
