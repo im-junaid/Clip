@@ -95,20 +95,20 @@ WSGI_APPLICATION = "clip.wsgi.application"
 
 # for postgresql
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.postgresql",
-    #     "NAME": os.getenv("DB_NAME"),
-    #     "USER": os.getenv("DB_USER"),
-    #     "PASSWORD": os.getenv("DB_PASSWORD"),
-    #     "HOST": os.getenv("DB_HOST"),
-    #     # Cast DB_PORT to int; if missing, default to 5432
-    #     "PORT": int(os.getenv("DB_PORT", "5432")),
-    # }
-    
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        # Cast DB_PORT to int; if missing, default to 5432
+        "PORT": int(os.getenv("DB_PORT", "5432")),
     }
+
+    # "default": {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": BASE_DIR / "db.sqlite3",
+    # }
 }
 
 
@@ -151,6 +151,8 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

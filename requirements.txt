@@ -6,3 +6,6 @@ pillow==11.1.0
 sqlparse==0.5.3
 typing_extensions==4.12.2
 python-dotenv
+requests
+beautifulsoup4
+google-generativeai

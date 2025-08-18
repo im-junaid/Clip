@@ -38,6 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewDescription = document.getElementById('view-description');
     const viewTags = document.getElementById('view-tags');
 
+    //----------ai model
+    const autofillModal = document.getElementById('add-modal-autofill');
+    const autofillContent = document.getElementById('add-modal-content-autofill');
+    const autofillBtn = document.getElementById('autofill-btn');
+    const autofillCloseBtn = document.getElementById('add-closeBtn-autofill');
+    const autofillModelErr = document.getElementById('add-model-autofill-error');
+    const autofillSubmitBtn = document.getElementById('autofill-submit');
+    const autofillBtnSpan = document.getElementById('autofill-submit-span');
+    const autofillurl = document.getElementById('add-url-autofill');
 
     // --------- Bookmark add, edit, delete, functions 
 
@@ -493,28 +502,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------- animate open/close modal 
-    
+
     function showModal(modalWrapper, modalContent) {
         document.body.classList.add('overflow-hidden');
         // Enable interaction
         modalWrapper.classList.remove('opacity-0', 'pointer-events-none');
         modalWrapper.classList.add('opacity-100', 'pointer-events-auto');
-    
+
         // Animate content
         modalContent.classList.remove('opacity-0', 'scale-95');
         modalContent.classList.add('opacity-100', 'scale-100');
     }
-    
+
     function hideModal(modalWrapper, modalContent) {
         document.body.classList.remove('overflow-hidden');
         // Start content fade out
         modalContent.classList.remove('opacity-100', 'scale-100');
         modalContent.classList.add('opacity-0', 'scale-95');
-    
+
         // Start overlay fade out
         modalWrapper.classList.remove('opacity-100');
         modalWrapper.classList.add('opacity-0');
-    
+
         // Wait for animation to complete, then disable pointer events
         setTimeout(() => {
             modalWrapper.classList.add('pointer-events-none');
@@ -526,9 +535,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkCardCount() {
         const cardsContainer = document.getElementById('cards');
         const noBookmarksMsg = document.getElementById('no-bookmarks');
-    
+
         const cardCount = cardsContainer.querySelectorAll('.card').length;
-    
+
         if (cardCount < 1) {
             noBookmarksMsg.classList.remove('hidden');
         } else {
@@ -694,4 +703,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearFilterBtn.addEventListener('click', clearFilters);
 
+    autofillSubmitBtn.addEventListener('click', async function() {
+        autofillModelErr.textContent = "";
+        const urlVal = autofillurl.value;
+        if (!urlVal) {
+            autofillModelErr.textContent = "Url is required."
+            return;
+        }
+
+        // Show a loading state
+        autofillBtnSpan.textContent = 'Fetching...';
+        autofillSubmitBtn.disabled = true;
+
+        
+        try {
+            const response = await fetch('/bookmarks/add/auto-bookmark/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'), 
+                },
+                body: JSON.stringify({ url: urlVal })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to fetch details.');
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            autofillModelErr.textContent = "Try another one."
+        } finally {
+            // Restore the button state
+            autofillSubmitBtn.disabled = false;
+            autofillBtnSpan.textContent = 'Add bookmark';
+
+        }
+    });
+
+
+    autofillModal.addEventListener('click', e => {
+        if (e.target === autofillModal) {
+            autofillurl.value = "";
+            hideModal(autofillModal, autofillContent);
+
+        }
+    });
+
+    autofillCloseBtn.addEventListener('click', () => {
+        autofillurl.value = "";
+        hideModal(autofillModal, autofillContent);
+    });
+
+    autofillBtn.addEventListener('click', () => {
+        autofillurl.value = "";
+        showModal(autofillModal, autofillContent);
+    });
+
 });
+
+
+

@@ -123,10 +123,10 @@
                         stroke-linejoin="round">
                         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
                     </svg> </span>
-                <span class="brand-name">Clip</span>
+                <span class="brand-name hidden md:block">Clip</span>
             </a>
             {% if user.is_authenticated %}
-            <a class="ml-2 px-4 py-2 text-sm font-medium text-gray-300 capitalize rounded-xl transition-colors duration-200 transform hover:bg-gray-700 md:ml-3.5 md:text-base"
+            <a class="px-2 py-2 text-sm font-medium text-gray-300 capitalize rounded-xl transition-colors duration-200 transform hover:bg-gray-700 md:ml-3.5 md:px-4 md:text-base"
                 href="{% url 'bookmark:bookmarks' %}">Bookmarks</a>
                 
             {% if user.is_staff %}
