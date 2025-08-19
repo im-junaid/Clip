@@ -9,7 +9,7 @@
 {% block content %}
 
 <!-- Main Content -->
-<main class="p-5 md:pt-12">
+<main class="p-5 md:pt-10">
     <div class="flex justify-between items-center mb-6 md:mr-4">
         <h2 class="text-3xl font-bold">Clip</h2>
         <div class="flex">
@@ -120,7 +120,7 @@
 
     <!-- Bookmark search list -->
     <section id="searchResults" class="transition-all duration-1000 ease-in-out opacity-0 max-h-0">
-        <h2 class="text-white font-bold text-base mt-8 md:text-lg">🔍 Search Results</h2>
+        <h2 class="text-white font-bold text-base mt-4 md:text-lg">🔍 Search Results</h2>
         <div id="searchResultsDiv"
             class="grid grid-cols-1 gap-4 mt-3 transition-all duration-600 ease-in-out opacity-0 max-h-0 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
         </div>
@@ -134,42 +134,16 @@
 
     <!-- Bookmark deafult list -->
     <section id="defaultCards" class="relative">
-        <h2 class="text-white font-bold text-base mt-8 md:text-lg">📂 Your Bookmark Library</h2>
-        <div id="cards" class="grid grid-cols-1 gap-4 mt-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
-
-            {% for bm in bookmarks %}
-
-            <div class="card p-4 md:p-6 relative cursor-pointer" data-bm-id="{{ bm.id }}"
-                data-platform="{{ bm.platform }}" data-tags='{{ bm.tags|to_json }}'>
-
-                <h3 class="mb-2 font-semibold text-lg md:text-xl truncate">{{ bm.name }}</h3>
-
-                {% if bm.url %}
-                <a href="{{ bm.url }}" target="_blank"
-                    class="url inline-block text-[#58a6ff] mb-3 text-xs truncate whitespace-nowrap max-w-[200px] md:text-sm hover:underline">{{ bm.url }}</a>
-                {% endif %}
-                <p class="text-xs mb-2 mt-2 leading-[1.4] text-gray-400  truncate line-clamp-2 md:mb-3">{{ bm.description }}</p>
-
-                <!-- <div class="tags mt-3 flex flex-wrap gap-1 md:gap-2"> -->
-                <div class="tags mt-3 flex flex-wrap gap-1 md:gap-2 max-h-[1.5rem] md:max-h-[2rem] overflow-hidden">
-                    <span class="text-[10px] md:text-xs tag">{{ bm.platform }}</span>
-
-                    {% with bm.tags|length as total_tags %}
-                    {% for tag in bm.tags|slice:":3" %}
-                    <span class="text-[10px] md:text-xs tag">{{ tag }}</span>
-                    {% endfor %}
-
-                    {% if total_tags > 3 %}
-                    <span class="text-[10px] md:text-xs tag">
-                        +{{ total_tags|add:"-3" }}
-                    </span>
-                    {% endif %}
-                    {% endwith %}
-
-                </div>
-            </div>
-            {% endfor %}
+        <h2 class="text-white font-bold text-base mt-4 md:text-lg">📂 My Bookmark Collection (<span id="total_bookmarks_count">{{ total_bookmarks }}</span>)</h2>
+        <div id="cards" class="grid grid-cols-1 gap-4 mt-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8" 
+            data-has-next="{{ has_next|yesno:'true,false' }}" data-page-number="{{ page_number }}">
+            {% include '_bookmark_list.html' with bookmarks=bookmarks %}
         </div>
+
+        <div id="card-load-more-trigger"></div>
+
+        <div id="card-loading-spinner" style="display: none;">Loading...</div>
+
         <!-- No bookmark found -->
         <div id="no-bookmarks" class="hidden col-span-full flex flex-col items-center justify-center mt-10 text-center">
             <div class="bg-[#232B3A] rounded-full p-5 mb-4">

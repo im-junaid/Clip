@@ -5,19 +5,22 @@ from django.views.decorators.http import require_POST
 from django.db import IntegrityError, transaction
 from django.shortcuts import render, redirect
 from django.utils.timezone import localtime
+from django.core.paginator import Paginator
 from django.contrib import messages
+from django.conf import settings
 from django.urls import reverse
 from django.db.models import Q
+
+import google.generativeai as genai
+from bs4 import BeautifulSoup
 from .models import Bookmark
+import requests
 import json
 
 
-import requests
-from bs4 import BeautifulSoup
-import google.generativeai as genai
-from django.conf import settings
-# Use for testing, better to handle CSRF properly in production
-from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
+from django.shortcuts import render
+from django.http import HttpResponse
 
 # Configure the Gemini API
 genai.configure(api_key=settings.GEMINI_API_KEY)
@@ -32,10 +35,43 @@ def index(request):
 
 @login_required
 def dashbord(request):
-    # get the last 9 bookmarks for this user, newest first
-    recent = Bookmark.objects.filter(
-        user=request.user).order_by("-created_at")[:9]
-    return render(request, "dashboard.html", {"bookmarks": recent})
+    all_bookmarks = Bookmark.objects.filter(
+        user=request.user).order_by("-created_at")
+    total_bookmarks_count = all_bookmarks.count()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        page_number = int(request.GET.get('page', '2'))
+
+        items_after_first_page = all_bookmarks[6:]
+        paginator = Paginator(items_after_first_page, 12)
+
+        # We need to check if the page exists and has a next page
+        real_page_number = page_number - 1
+        if real_page_number > paginator.num_pages:
+            return HttpResponse("", headers={'X-Has-Next': 'false'})
+
+        page_obj = paginator.get_page(real_page_number)
+
+        # Render the partial template to a string
+        html_content = render(request, '_bookmark_list.html', {
+                              'bookmarks': page_obj}).content.decode('utf-8')
+
+        # ✅ Create a response and add the custom header
+        response = HttpResponse(html_content)
+        response['X-Has-Next'] = 'true' if page_obj.has_next() else 'false'
+        return response
+
+    else:  # Initial page load
+        first_page_items = all_bookmarks[:6]
+        has_next = total_bookmarks_count > 6
+
+        context = {
+            "bookmarks": first_page_items,
+            "total_bookmarks": total_bookmarks_count,
+            "has_next": has_next,
+            "page_number": 1
+        }
+        return render(request, "dashboard.html", context)
 
 
 # add bookmark
@@ -425,8 +461,6 @@ def auto_add_bookmark(request):
         if ai_data.get("status") == "no_data":
             return JsonResponse({'error': 'Could not determine bookmark details from the URL.'}, status=400)
 
-        print(ai_data)
-
         try:
             bm = Bookmark.objects.create(
                 user=request.user,
@@ -438,11 +472,22 @@ def auto_add_bookmark(request):
             )
             bm.save()
 
-        except Exception as e:
-            print("error : ", e)
-            return JsonResponse(ai_data)
+            bookmark_data = {
+                'id': bm.id,
+                'name': bm.name,
+                'url': bm.url,
+                'description': bm.description,
+                'platform': bm.platform,
+                'tags': bm.tags
+            }
 
-        return JsonResponse(ai_data)
+            return JsonResponse({
+                'status': 'success',
+                'bookmark': bookmark_data
+            })
+
+        except Exception as e:
+            return JsonResponse(ai_data)
 
     except requests.exceptions.RequestException as e:
         # This is the code that returns the 400 Bad Request to your browser
