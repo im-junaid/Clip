@@ -1,6 +1,5 @@
 # deploy-anywhere/.gitattributes
 clip/settings.py       merge=ours
-requirements.txt       merge=ours
 .gitignore             merge=ours
 
 package-lock.json      merge=ours
