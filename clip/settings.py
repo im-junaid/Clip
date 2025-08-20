@@ -61,7 +61,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "clip.urls"
-LOGIN_URL = 'signin'
+LOGIN_URL = 'accounts:signin'
 LOGIN_REDIRECT_URL = '/' 
 LOGOUT_REDIRECT_URL = '/' 
 
