@@ -1,0 +1,180 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Clip - Profile {% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+<main class="p-5 md:p-12">
+    <div class="flex w-full justify-center items-center">
+        <div class="container mx-auto">
+            <!-- Header -->
+            <header class="flex justify-between items-center mb-4 md:mb-8">
+                <h1 class="text-2xl font-bold text-[#c9d1d9] md:text-3xl">Profile</h1>
+            </header>
+
+            <!-- Profile Card -->
+            <div class="bg-[var(--card-bg)] border border-custom-card cursor-pointer overflow-hidden mb-8">
+                <div class="md:flex">
+                    <!-- Profile Picture Section -->
+                    <div class="md:w-1/3 px-6 pt-6 pb-4 flex flex-col items-center md:p-6">
+                        <div
+                            class="inline-block relative rounded-full bg-[#6c757d] !border-6 [border-color:var(--btn-bg)] overflow-hidden">
+                            <img id="profile-pic" src="{% static 'images/default.png' %}" alt="Profile"
+                                class="w-25 h-25 rounded-full object-cover md:w-32 md:h-32">
+                        </div>
+                    </div>
+
+                    <!-- Profile Info Section -->
+                    <div class="flex flex-col items-center px-6 pb-6 pt-0  md:items-start md:w-2/3 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h2 id="username" class="text-2xl font-bold text-[#c9d1d9] md:text-2xl">{{ user.username }}</h2>
+                                <p id="user-email" class="text-sm text-[#58a6ff] md:text-lg">{{ user.email }}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center">
+                                <div class="text-gray-400 pr-3">Joined : </div>
+                                <div id="joined-date" class="font-medium text-[#c9d1d9]">January 15, 2022</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-around w-full mt-4 md:gap-4 md:justify-start">
+                            <button
+                                class="btn-primary inline-flex items-center text-white text-xs font-medium transition md:text-sm md:px-6 md:py-3">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-3 w-3 mr-2 fill-current md:h-4 md:w-4 md:mr-4" viewBox="0 0 512 512">
+                                    <path
+                                        d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48L48 64zM0 176L0 384c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-208L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z" />
+                                </svg>
+                                Edit Email
+                            </button>
+                            <button
+                                class="inline-flex items-center px-4 py-3 bg-[var(--bg)] border border-gray-500 border-custom-card text-gray-300 text-xs font-medium transition hover:bg-gray-700 hover:text-white md:text-sm md:px-6 md:py-3">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-3 w-3 mr-2 fill-current md:h-4 md:w-4 md:mr-4" viewBox="0 0 512 512">
+                                    <path
+                                        d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17l0 80c0 13.3 10.7 24 24 24l80 0c13.3 0 24-10.7 24-24l0-40 40 0c13.3 0 24-10.7 24-24l0-40 40 0c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z" />
+                                </svg>
+                                Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Stats Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                <div
+                    class="flex items-center p-6 bg-[var(--card-bg)] border border-custom-card cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-[#703edb]/10 text-[var(--btn-bg)] mr-4">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="24" height="24">
+                                    <path fill="currentColor"
+                                        d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div>
+                            <div class="text-gray-400">Bookmarks</div>
+                            <div id="bookmark-count" class="text-2xl font-bold text-[#c9d1d9]">{{ total_bookmarks }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Import Card -->
+                <div
+                    class="flex items-center p-6 bg-[var(--card-bg)] border border-custom-card cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-[#58a6ff]/10 text-[#58a6ff] mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+                                <path fill="currentColor"
+                                    d="M128 64c0-35.3 28.7-64 64-64L352 0l0 128c0 17.7 14.3 32 32 32l128 0 0 288c0 35.3-28.7 64-64 64l-256 0c-35.3 0-64-28.7-64-64l0-112 174.1 0-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39L128 288l0-224zm0 224l0 48L24 336c-13.3 0-24-10.7-24-24s10.7-24 24-24l104 0zM512 128l-128 0L384 0 512 128z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-gray-400">Import</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Card -->
+                <div
+                    class="flex items-center  p-6 bg-[var(--card-bg)] border border-custom-card cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.2)]  ">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100/10 text-green-500 mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="24" height="24">
+                                <path fill="currentColor"
+                                    d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 128-168 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l168 0 0 112c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zM384 336l0-48 110.1 0-39-39c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l80 80c9.4 9.4 9.4 24.6 0 33.9l-80 80c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l39-39L384 336zm0-208l-128 0L256 0 384 128z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-gray-400">Export</div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+        <!-- Edit Profile Modal -->
+        <!-- Password Edit Modal -->
+        <div id="password-modal"
+            class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-secondary-dark rounded-lg p-6 w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Update Password</h3>
+                    <button onclick="closeModal('password-modal')" class="text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">Current Password</label>
+                        <input type="password" id="current-password"
+                            class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">New Password</label>
+                        <input type="password" id="new-password"
+                            class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">Confirm New Password</label>
+                        <input type="password" id="confirm-password"
+                            class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    </div>
+                    <button onclick="updatePassword()"
+                        class="btn-primary text-white px-4 py-2 rounded-md text-sm font-medium w-full">
+                        Update Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- <script>
+        // DOM Elements
+        const editBtn = document.getElementById('edit-btn');
+        const editModal = document.getElementById('edit-modal');
+        const closeModal = document.getElementById('close-modal');
+        const cancelEdit = document.getElementById('cancel-edit');
+        const profileForm = document.getElementById('profile-form');
+
+    </script> -->
+
+{% endblock %}

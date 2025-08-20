@@ -14,22 +14,24 @@ import os
 from pathlib import Path
 import dj_database_url
 from django.conf import settings
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# Load .env file
+load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
 
 # Application definition
 
@@ -85,12 +87,12 @@ WSGI_APPLICATION = "clip.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),        # Database name
-        'USER': os.environ.get('DB_USER'),        # Database user
-        'PASSWORD': os.environ.get('DB_PASSWORD'),# Database password
-        'HOST': os.environ.get('DB_HOST'),        # Supabase host
-        'PORT': os.environ.get('DB_PORT', '5432'),# Default PostgreSQL port
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),        # Database name
+        'USER': os.getenv('DB_USER'),        # Database user
+        'PASSWORD': os.getenv('DB_PASSWORD'),# Database password
+        'HOST': os.getenv('DB_HOST'),        # Supabase host
+        'PORT': os.getenv('DB_PORT', '5432'),# Default PostgreSQL port
         
         # 'OPTIONS': {'sslmode': 'require'},  # SSL for Supabase
         'CONN_MAX_AGE': 600,  # Connection pooling
@@ -144,8 +146,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = "Clip Support <riderentals10@gmail.com>"
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = f"Clip Support <{EMAIL_HOST_USER}>"
 
 PASSWORD_RESET_EMAIL_HTML = 'emails/password_reset_email.html'

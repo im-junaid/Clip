@@ -1,12 +1,6 @@
 
 .vscode/
 node_modules/
-tailwind.config.js
-tailwindcss-build.txt
-package.json
-package-lock.json
-db.sqlite3
-
 
 ### Django ###
 *.log

@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const noResults = document.getElementById('noResults');
     const clearFilterBtn = document.getElementById('clearFilterBtn');
     const filterSummary = document.getElementById('filterSummary');
+    const totalBookmarks = document.getElementById('total_bookmarks_count');
+
 
     // --------- view modal
 
@@ -38,6 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewDescription = document.getElementById('view-description');
     const viewTags = document.getElementById('view-tags');
 
+    //----------ai model
+    const autofillModal = document.getElementById('add-modal-autofill');
+    const autofillContent = document.getElementById('add-modal-content-autofill');
+    const autofillBtn = document.getElementById('autofill-btn');
+    const autofillCloseBtn = document.getElementById('add-closeBtn-autofill');
+    const autofillModelErr = document.getElementById('add-model-autofill-error');
+    const autofillSubmitBtn = document.getElementById('autofill-submit');
+    const autofillBtnSpan = document.getElementById('autofill-submit-span');
+    const autofillurl = document.getElementById('add-url-autofill');
 
     // --------- Bookmark add, edit, delete, functions 
 
@@ -340,6 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             cardElement = renderCard(false, id, name, url, desc, cat, tags);
                         } else {
                             cardElement = renderCard(true, json.id, name, url, desc, cat, tags);
+                            totalBookmarks.textContent = (parseInt(totalBookmarks.textContent) + 1);
+
                         }
                         defaultCardsInner.prepend(cardElement);
                         checkCardCount();
@@ -484,6 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.querySelector(`.card[data-bm-id="${currentCardData.id}"]`)?.remove();
                     showToast('Deleted', 'success');
                     checkCardCount();
+                    totalBookmarks.textContent = (parseInt(totalBookmarks.textContent) - 1);
                     hideModal(viewModal, viewCard);
                 } else {
                     showToast(json.error || 'Delete failed', 'error');
@@ -493,28 +507,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --------- animate open/close modal 
-    
+
     function showModal(modalWrapper, modalContent) {
         document.body.classList.add('overflow-hidden');
         // Enable interaction
         modalWrapper.classList.remove('opacity-0', 'pointer-events-none');
         modalWrapper.classList.add('opacity-100', 'pointer-events-auto');
-    
+
         // Animate content
         modalContent.classList.remove('opacity-0', 'scale-95');
         modalContent.classList.add('opacity-100', 'scale-100');
     }
-    
+
     function hideModal(modalWrapper, modalContent) {
         document.body.classList.remove('overflow-hidden');
         // Start content fade out
         modalContent.classList.remove('opacity-100', 'scale-100');
         modalContent.classList.add('opacity-0', 'scale-95');
-    
+
         // Start overlay fade out
         modalWrapper.classList.remove('opacity-100');
         modalWrapper.classList.add('opacity-0');
-    
+
         // Wait for animation to complete, then disable pointer events
         setTimeout(() => {
             modalWrapper.classList.add('pointer-events-none');
@@ -526,9 +540,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkCardCount() {
         const cardsContainer = document.getElementById('cards');
         const noBookmarksMsg = document.getElementById('no-bookmarks');
-    
+
         const cardCount = cardsContainer.querySelectorAll('.card').length;
-    
+
         if (cardCount < 1) {
             noBookmarksMsg.classList.remove('hidden');
         } else {
@@ -694,4 +708,149 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearFilterBtn.addEventListener('click', clearFilters);
 
+    // ─── Auto fill bookmark with ai  ───────────────────────────────
+
+    autofillSubmitBtn.addEventListener('click', async function () {
+        autofillModelErr.textContent = "";
+        const urlVal = autofillurl.value;
+        if (!urlVal) {
+            autofillModelErr.textContent = "Url is required."
+            return;
+        }
+
+        // Show a loading state
+        autofillBtnSpan.textContent = 'Fetching...';
+        autofillSubmitBtn.disabled = true;
+
+
+        try {
+            const response = await fetch('/bookmarks/add/auto-bookmark/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ url: urlVal })
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                autofillModelErr.textContent = "Failed to fetch details, Try another one."
+                throw new Error(responseData.error || 'Failed to fetch details.');
+
+            }
+            autofillModelErr.textContent = ""
+
+            let bm = responseData.bookmark;
+            let cardElement = renderCard(true, bm.id, bm.name, bm.url, bm.description, bm.platform, bm.tags);
+            defaultCardsInner.prepend(cardElement);
+            checkCardCount();
+            autofillurl.value = "";
+            autofillModelErr.textContent = ""
+            hideModal(autofillModal, autofillContent);
+            showToast(`Bookmark Added !`, 'success');
+
+        } catch (error) {
+            autofillModelErr.textContent = "Try another one."
+        } finally {
+            // Restore the button state
+            autofillSubmitBtn.disabled = false;
+            autofillBtnSpan.textContent = 'Add bookmark';
+
+
+        }
+    });
+
+    autofillModal.addEventListener('click', e => {
+        if (e.target === autofillModal) {
+            autofillurl.value = "";
+            autofillModelErr.textContent = ""
+            hideModal(autofillModal, autofillContent);
+
+        }
+    });
+
+    autofillCloseBtn.addEventListener('click', () => {
+        autofillurl.value = "";
+        autofillModelErr.textContent = ""
+        hideModal(autofillModal, autofillContent);
+    });
+
+    autofillBtn.addEventListener('click', () => {
+        showModal(autofillModal, autofillContent);
+    });
+
+
+    // ─── Infinite scroll  ───────────────────────────────
+
+    const loadMoreTrigger = document.getElementById('card-load-more-trigger');
+    const loadingSpinner = document.getElementById('card-loading-spinner');
+
+    let hasMore = defaultCardsInner.dataset.hasNext === 'true';
+    let page = parseInt(defaultCardsInner.dataset.pageNumber, 10);
+
+    let isLoading = false;
+
+    const loadMoreBookmarks = async () => {
+        if (!hasMore || isLoading) {
+            return;
+        }
+
+        isLoading = true;
+        page++;
+        loadingSpinner.style.display = 'block';
+
+        try {
+            const response = await fetch(`?page=${page}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (response.ok) {
+                const newHasMore = response.headers.get('X-Has-Next') === 'true';
+                hasMore = newHasMore;
+
+                const newBookmarksHtml = await response.text();
+
+                if (newBookmarksHtml.trim().length > 0) {
+                    defaultCardsInner.insertAdjacentHTML('beforeend', newBookmarksHtml);
+                }
+
+                // If the header says there are no more pages, stop the observer
+                if (!hasMore) {
+                    observer.disconnect();
+                    loadMoreTrigger.style.display = 'none';
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load more bookmarks:', error);
+        } finally {
+            isLoading = false;
+            loadingSpinner.style.display = 'none';
+        }
+    };
+
+    if (!hasMore) {
+        loadMoreTrigger.style.display = 'none';
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            loadMoreBookmarks();
+        }
+    });
+
+    observer.observe(loadMoreTrigger);
+
+
+
+
+
+
 });
+
+
+

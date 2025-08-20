@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clip - Profile</title>
+    <!-- Email Edit Modal -->
+    <div id="email-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-secondary-dark rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Update Email</h3>
+                <button onclick="closeModal('email-modal')" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">Current Email</label>
+                    <input type="email" id="current-email" class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white" disabled>
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">New Email</label>
+                    <input type="email" id="new-email" class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">Confirm Password</label>
+                    <input type="password" id="email-password" class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <button onclick="updateEmail()" class="btn-primary text-white px-4 py-2 rounded-md text-sm font-medium w-full">
+                    Update Email
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Edit Modal -->
+    <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-secondary-dark rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Update Password</h3>
+                <button onclick="closeModal('password-modal')" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">Current Password</label>
+                    <input type="password" id="current-password" class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">New Password</label>
+                    <input type="password" id="new-password" class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-sm mb-1">Confirm New Password</label>
+                    <input type="password" id="confirm-password" class="w-full bg-primary-dark border border-gray-700 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <button onclick="updatePassword()" class="btn-primary text-white px-4 py-2 rounded-md text-sm font-medium w-full">
+                    Update Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-dark: #131D35;
+            --secondary-dark: #232B3A;
+            --accent-purple: #703edb;
+            --text-main: #c9d1d9;
+            --accent-blue: #58a6ff;
+        }
+        
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .profile-card {
+            background-color: var(--secondary-dark);
+            border: 1px solid hsl(217.2 32.6% 17.5%);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card {
+            background-color: rgba(19, 29, 53, 0.5);
+            border: 1px solid hsl(217.2 32.6% 17.5%);
+        }
+        
+        .accent-text {
+            color: var(--accent-blue);
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-purple);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #370c8d;
+        }
+        
+        .divider {
+            border-color: hsl(217.2 32.6% 17.5%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl">
+        <div class="profile-card rounded-lg overflow-hidden p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                <!-- Profile placeholder (no image) -->
+                <div class="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 text-4xl font-bold">
+                    <span id="initials">US</span>
+                </div>
+                
+                <div class="flex-1">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                        <div>
+                            <h1 class="text-2xl font-bold" id="username">User Name</h1>
+                            <p class="text-gray-400" id="email">user@example.com</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openModal('email-modal')" class="btn-primary text-white px-3 py-1.5 rounded-md text-xs font-medium">
+                                Edit Email
+                            </button>
+                            <button onclick="openModal('password-modal')" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition">
+                                Change Password
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                        <div class="stat-card p-4 rounded-lg">
+                            <p class="text-gray-400 text-sm">Joined</p>
+                            <p class="font-medium" id="joined-date">Jan 1, 2023</p>
+                        </div>
+                        <div class="stat-card p-4 rounded-lg">
+                            <p class="text-gray-400 text-sm">Bookmarks</p>
+                            <p class="font-medium" id="total-bookmarks">128</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data - in a real app this would come from your backend
+        const userData = {
+            username: "DevExplorer",
+            email: "devexplorer@example.com",
+            joinedDate: "March 15, 2022",
+            totalBookmarks: 247,
+        };
+
+        // Set the user data
+        document.getElementById('username').textContent = userData.username;
+        document.getElementById('email').textContent = userData.email;
+        document.getElementById('joined-date').textContent = userData.joinedDate;
+        document.getElementById('total-bookmarks').textContent = userData.totalBookmarks;
+        // Generate initials from username
+        const generateInitials = (name) => {
+            const parts = name.split(' ');
+            let initials = '';
+            for (const part of parts) {
+                if (part.length > 0) {
+                    initials += part[0].toUpperCase();
+                }
+            }
+            return initials.substring(0, 2);
+        };
+        
+        document.getElementById('initials').textContent = generateInitials(userData.username);
+        document.getElementById('current-email').value = userData.email;
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function updateEmail() {
+            const newEmail = document.getElementById('new-email').value;
+            const password = document.getElementById('email-password').value;
+            
+            // Here you would normally make an API call to update the email
+            console.log('Updating email to:', newEmail);
+            
+            // For demo purposes:
+            userData.email = newEmail;
+            document.getElementById('email').textContent = newEmail;
+            document.getElementById('current-email').value = newEmail;
+            closeModal('email-modal');
+            alert('Email updated successfully!');
+        }
+
+        function updatePassword() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Here you would normally make an API call to update the password
+            console.log('Updating password...');
+            
+            // For demo purposes:
+            closeModal('password-modal');
+            alert('Password updated successfully!');
+        }
+    </script>
+</body>
+</html>
