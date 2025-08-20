@@ -1,7 +1,7 @@
 # deploy-anywhere/.gitattributes
 clip/settings.py       merge=ours
 .gitignore             merge=ours
-
+doc/                    merge=ours
 package-lock.json      merge=ours
 package.json           merge=ours
 tailwind.config.js     merge=ours
