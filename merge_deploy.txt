@@ -1,0 +1,41 @@
+B1 — Quick merge + restore preserved file
+git fetch origin
+git checkout deploy-anywhere
+
+# backup file
+cp clip/settings.py /tmp/repo-backup/clip_settings.py
+
+# merge allowing unrelated histories
+git merge origin/main --allow-unrelated-histories
+
+# if conflicts occur, resolve them (or skip by restoring file)
+# restore deploy version of the file
+cp /tmp/repo-backup/clip_settings.py clip/settings.py
+git add clip/settings.py
+
+# finish merge (if conflicts were present you may need to git add other files then:)
+git commit --no-edit   # or provide commit message if prompted
+
+# push
+git push origin deploy-anywhere
+
+B2 — Make merges automatically keep deploy-anywhere's clip/settings.py
+
+This sets up a merge driver so that when you merge, clip/settings.py from the branch being merged into (i.e., deploy-anywhere) is kept automatically.
+
+git fetch origin
+git checkout deploy-anywhere
+
+# register a trivial "ours" merge driver
+git config merge.ours.driver true
+
+# add gitattributes so Git uses "ours" for that file
+echo "clip/settings.py merge=ours" >> .gitattributes
+git add .gitattributes
+git commit -m "Ensure clip/settings.py keeps deploy branch version on merge"
+
+# now merge unrelated histories
+git merge origin/main --allow-unrelated-histories
+
+# push
+git push origin deploy-anywhere
