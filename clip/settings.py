@@ -93,8 +93,8 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME'),        # Database name
         'USER': os.getenv('DB_USER'),        # Database user
         'PASSWORD': os.getenv('DB_PASSWORD'),# Database password
-        'HOST': os.getenv('DB_HOST'),        # Supabase host
-        'PORT': os.getenv('DB_PORT', '5432'),# Default PostgreSQL port
+        'HOST': os.getenv('DB_HOST'),        # Database host
+        # 'PORT': os.getenv('DB_PORT', '5432'),# Default PostgreSQL port
         
         # 'OPTIONS': {'sslmode': 'require'},  # SSL for Supabase
         'CONN_MAX_AGE': 600,  # Connection pooling
